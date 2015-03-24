@@ -201,7 +201,8 @@ static void gst_bdasrc_set_property (GObject * object, guint prop_id,
 static void gst_bdasrc_get_property (GObject * object, guint prop_id,
     GValue * value, GParamSpec * pspec);
 
-static void gst_bdasrc_sample_received(GstBdaSrc *self, gpointer data, gsize size);
+static void gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data,
+    gsize size);
 static GstFlowReturn gst_bdasrc_create (GstPushSrc * element,
     GstBuffer ** buffer);
 
@@ -226,13 +227,12 @@ static GstStaticPadTemplate ts_src_factory = GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_ALWAYS,
     GST_STATIC_CAPS
     ("video/mpegts, "
-        "mpegversion = (int) 2,"
-        "systemstream = (boolean) TRUE"));
+        "mpegversion = (int) 2," "systemstream = (boolean) TRUE"));
 
 /* GObject Related */
 
 #define gst_bdasrc_parent_class parent_class
-G_DEFINE_TYPE(GstBdaSrc, gst_bdasrc, GST_TYPE_PUSH_SRC);
+G_DEFINE_TYPE (GstBdaSrc, gst_bdasrc, GST_TYPE_PUSH_SRC);
 
 /* Initialize the plugin's class. */
 static void
@@ -252,10 +252,10 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
   gobject_class->get_property = gst_bdasrc_get_property;
   gobject_class->finalize = gst_bdasrc_finalize;
 
-  gst_element_class_add_pad_template(gstelement_class,
-      gst_static_pad_template_get(&ts_src_factory));
+  gst_element_class_add_pad_template (gstelement_class,
+      gst_static_pad_template_get (&ts_src_factory));
 
-  gst_element_class_set_details_simple(gstelement_class, "BDA Source",
+  gst_element_class_set_details_simple (gstelement_class, "BDA Source",
       "Source/Video",
       "Microsoft Broadcast Driver Architecture Source",
       "Raimo Järvi <raimo.jarvi@gmail.com>");
@@ -322,9 +322,9 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 static void
 gst_bdasrc_init (GstBdaSrc * self)
 {
-  GST_INFO_OBJECT(self, "gst_bdasrc_init");
+  GST_INFO_OBJECT (self, "gst_bdasrc_init");
 
-  gst_base_src_set_live(GST_BASE_SRC(self), TRUE);
+  gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
 
   self->adapter_number = DEFAULT_ADAPTER;
   self->frequency = 0;
@@ -341,10 +341,10 @@ gst_bdasrc_init (GstBdaSrc * self)
   self->filter_graph = NULL;
   self->media_control = NULL;
 
-  g_mutex_init(&self->lock);
-  g_cond_init(&self->cond);
+  g_mutex_init (&self->lock);
+  g_cond_init (&self->cond);
 
-  g_queue_init(&self->ts_samples);
+  g_queue_init (&self->ts_samples);
 
   self->sample_received = gst_bdasrc_sample_received;
 
@@ -441,7 +441,7 @@ static gboolean
 gst_bdasrc_create_graph (GstBdaSrc * src)
 {
   HRESULT res = CoCreateInstance (CLSID_FilterGraph, NULL, CLSCTX_ALL,
-      __uuidof (IGraphBuilder), (LPVOID *) &src->filter_graph);
+      __uuidof (IGraphBuilder), (LPVOID *) & src->filter_graph);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to create filter graph");
     return FALSE;
@@ -660,28 +660,29 @@ gst_bdasrc_plugin_init (GstPlugin * plugin)
       GST_TYPE_BDASRC);
 }
 
-static void gst_bdasrc_sample_received (GstBdaSrc *self, gpointer data, gsize size)
+static void
+gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
 {
   GstBuffer *buffer;
   GstMemory *memory;
 
-  g_mutex_lock(&self->lock);
+  g_mutex_lock (&self->lock);
 
   /* FIXME: Hard coded max size. */
-  while (g_queue_get_length(&self->ts_samples) >= 100) {
-    buffer = (GstBuffer *)g_queue_pop_head(&self->ts_samples);
-    GST_WARNING_OBJECT(self, "Dropping TS sample");
-    gst_buffer_unref(buffer);
+  while (g_queue_get_length (&self->ts_samples) >= 100) {
+    buffer = (GstBuffer *) g_queue_pop_head (&self->ts_samples);
+    GST_WARNING_OBJECT (self, "Dropping TS sample");
+    gst_buffer_unref (buffer);
   }
 
   buffer = gst_buffer_new ();
   memory = gst_allocator_alloc (NULL, size, NULL);
   gst_buffer_insert_memory (buffer, -1, memory);
 
-  g_queue_push_tail(&self->ts_samples, buffer);
-  g_cond_signal(&self->cond);
+  g_queue_push_tail (&self->ts_samples, buffer);
+  g_cond_signal (&self->cond);
 
-  g_mutex_unlock(&self->lock);
+  g_mutex_unlock (&self->lock);
 }
 
 static GstFlowReturn
@@ -717,10 +718,9 @@ gst_bdasrc_start (GstBaseSrc * bsrc)
   GstBdaSrc *src = GST_BDASRC (bsrc);
 
   HRESULT hr = src->media_control->Run ();
-  if (SUCCEEDED(hr)) {
+  if (SUCCEEDED (hr)) {
     return TRUE;
-  }
-  else {
+  } else {
     src->media_control->Stop ();
     return FALSE;
   }
@@ -731,8 +731,8 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
 {
   GstBdaSrc *src = GST_BDASRC (bsrc);
 
-  src->media_control->Pause();
-  src->media_control->Stop();
+  src->media_control->Pause ();
+  src->media_control->Stop ();
 
   if (src->tuner) {
     src->tuner->Release ();
@@ -872,7 +872,8 @@ gst_bdasrc_load_filter (GstBdaSrc * src, ICreateDevEnum * sys_dev_enum,
       wname = nameBstr.bstrVal;
 
       /* FIXME: This is stupid. */
-      if (wcscmp(wname, L"BDA MPE Filter") == 0 || wcscmp(wname, L"BDA Slip De-Framer") == 0) {
+      if (wcscmp (wname, L"BDA MPE Filter") == 0
+          || wcscmp (wname, L"BDA Slip De-Framer") == 0) {
         VariantClear (&nameBstr);
         continue;
       }
