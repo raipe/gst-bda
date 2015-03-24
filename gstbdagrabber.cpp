@@ -19,40 +19,48 @@
 
 #include "gstbdagrabber.h"
 
-GstBdaGrabber::GstBdaGrabber(GstBdaSrc *bda_src)
-  : bda_src(bda_src) {
+GstBdaGrabber::GstBdaGrabber (GstBdaSrc * bda_src)
+:  bda_src (bda_src)
+{
 }
 
-GstBdaGrabber::~GstBdaGrabber() {
+GstBdaGrabber::~GstBdaGrabber ()
+{
 }
 
-STDMETHODIMP_(ULONG) GstBdaGrabber::AddRef() {
+STDMETHODIMP_ (ULONG) GstBdaGrabber::AddRef ()
+{
   // Reference counting is not implemented.
   return 1;
 }
 
-STDMETHODIMP_(ULONG) GstBdaGrabber::Release() {
+STDMETHODIMP_ (ULONG) GstBdaGrabber::Release ()
+{
   // Reference counting is not implemented.
   return 1;
 }
 
-STDMETHODIMP GstBdaGrabber::QueryInterface(REFIID riid, void** object) {
+STDMETHODIMP GstBdaGrabber::QueryInterface (REFIID riid, void **object)
+{
   return E_NOTIMPL;
 }
 
-STDMETHODIMP GstBdaGrabber::SampleCB(double time, IMediaSample* sample) {
-  BYTE* data = nullptr;
+STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
+{
+  BYTE *data = nullptr;
   HRESULT hr = sample->GetPointer(&data);
-  if (FAILED(hr)) {
-    GST_ERROR_OBJECT(bda_src, "Unable to create TS capture: %ld", hr);
+
+  if (FAILED (hr)) {
+    GST_ERROR_OBJECT (bda_src, "Unable to create TS capture: %ld", hr);
     return S_FALSE;
   }
 
-  bda_src->sample_received(bda_src, data, sample->GetActualDataLength());
+  bda_src->sample_received (bda_src, data, sample->GetActualDataLength ());
 
   return S_OK;
 }
 
-STDMETHODIMP GstBdaGrabber::BufferCB(double time, BYTE* buffer, long bufferLen) {
+STDMETHODIMP GstBdaGrabber::BufferCB (double time, BYTE * buffer, long bufferLen)
+{
   return E_FAIL;
 }
