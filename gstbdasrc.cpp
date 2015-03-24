@@ -203,8 +203,7 @@ static void gst_bdasrc_get_property (GObject * object, guint prop_id,
 
 static void gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data,
     gsize size);
-static GstFlowReturn gst_bdasrc_create (GstPushSrc * element,
-    GstBuffer ** buffer);
+static GstFlowReturn gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buffer);
 
 static gboolean gst_bdasrc_start (GstBaseSrc * bsrc);
 static gboolean gst_bdasrc_stop (GstBaseSrc * bsrc);
@@ -686,10 +685,19 @@ gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
 }
 
 static GstFlowReturn
-gst_bdasrc_create (GstPushSrc * element, GstBuffer ** buf)
+gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buf)
 {
-  // FIXME: read transport stream buffers from the queue
-  return GST_FLOW_ERROR;
+  GstBdaSrc *self = GST_BDASRC (src);
+
+  g_mutex_lock(&self->lock);
+  while (g_queue_is_empty(&self->ts_samples)) {
+    g_cond_wait(&self->cond, &self->lock);
+  }
+
+  *buf = (GstBuffer*)g_queue_pop_head(&self->ts_samples);
+  g_mutex_unlock(&self->lock);
+
+  return GST_FLOW_OK;
 }
 
 static GstStateChangeReturn

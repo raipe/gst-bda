@@ -78,6 +78,7 @@ G_BEGIN_DECLS
     /* MPEG-2 transport stream samples. */
     GQueue ts_samples;
 
+    /* Callback function for GstBdaGrabber. */
     void (*sample_received) (GstBdaSrc *bda_src, gpointer data, gsize size);
   };
 
