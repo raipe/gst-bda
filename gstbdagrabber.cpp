@@ -48,7 +48,7 @@ STDMETHODIMP GstBdaGrabber::SampleCB(double time, IMediaSample* sample) {
     return S_FALSE;
   }
 
-  bda_src->got_buffer(bda_src, data, sample->GetActualDataLength());
+  bda_src->sample_received(bda_src, data, sample->GetActualDataLength());
 
   return S_OK;
 }

@@ -201,6 +201,7 @@ static void gst_bdasrc_set_property (GObject * object, guint prop_id,
 static void gst_bdasrc_get_property (GObject * object, guint prop_id,
     GValue * value, GParamSpec * pspec);
 
+static void gst_bdasrc_sample_received(GstBdaSrc *self, gpointer data, gsize size);
 static GstFlowReturn gst_bdasrc_create (GstPushSrc * element,
     GstBuffer ** buffer);
 
@@ -319,26 +320,33 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 }
 
 static void
-gst_bdasrc_init (GstBdaSrc * object)
+gst_bdasrc_init (GstBdaSrc * self)
 {
-  GST_INFO_OBJECT (object, "gst_bdasrc_init");
+  GST_INFO_OBJECT(self, "gst_bdasrc_init");
 
-  gst_base_src_set_live (GST_BASE_SRC (object), TRUE);
+  gst_base_src_set_live(GST_BASE_SRC(self), TRUE);
 
-  object->adapter_number = DEFAULT_ADAPTER;
-  object->frequency = 0;
-  object->symbol_rate = DEFAULT_SYMBOL_RATE;
-  object->bandwidth = DEFAULT_BANDWIDTH;
-  object->code_rate_hp = DEFAULT_CODE_RATE_HP;
-  object->code_rate_lp = DEFAULT_CODE_RATE_LP;
-  object->guard_interval = DEFAULT_GUARD;
-  object->modulation = DEFAULT_MODULATION;
-  object->transmission_mode = DEFAULT_TRANSMISSION_MODE;
-  object->hierarchy_information = DEFAULT_HIERARCHY;
+  self->adapter_number = DEFAULT_ADAPTER;
+  self->frequency = 0;
+  self->symbol_rate = DEFAULT_SYMBOL_RATE;
+  self->bandwidth = DEFAULT_BANDWIDTH;
+  self->code_rate_hp = DEFAULT_CODE_RATE_HP;
+  self->code_rate_lp = DEFAULT_CODE_RATE_LP;
+  self->guard_interval = DEFAULT_GUARD;
+  self->modulation = DEFAULT_MODULATION;
+  self->transmission_mode = DEFAULT_TRANSMISSION_MODE;
+  self->hierarchy_information = DEFAULT_HIERARCHY;
 
-  object->tuner = NULL;
-  object->filter_graph = NULL;
-  object->media_control = NULL;
+  self->tuner = NULL;
+  self->filter_graph = NULL;
+  self->media_control = NULL;
+
+  g_mutex_init(&self->lock);
+  g_cond_init(&self->cond);
+
+  g_queue_init(&self->ts_samples);
+
+  self->sample_received = gst_bdasrc_sample_received;
 
   // FIXME
   CoInitializeEx (NULL, COINIT_MULTITHREADED);
@@ -650,6 +658,30 @@ gst_bdasrc_plugin_init (GstPlugin * plugin)
 
   return gst_element_register (plugin, "bdasrc", GST_RANK_NONE,
       GST_TYPE_BDASRC);
+}
+
+static void gst_bdasrc_sample_received (GstBdaSrc *self, gpointer data, gsize size)
+{
+  GstBuffer *buffer;
+  GstMemory *memory;
+
+  g_mutex_lock(&self->lock);
+
+  /* FIXME: Hard coded max size. */
+  while (g_queue_get_length(&self->ts_samples) >= 100) {
+    buffer = (GstBuffer *)g_queue_pop_head(&self->ts_samples);
+    GST_WARNING_OBJECT(self, "Dropping TS sample");
+    gst_buffer_unref(buffer);
+  }
+
+  buffer = gst_buffer_new ();
+  memory = gst_allocator_alloc (NULL, size, NULL);
+  gst_buffer_insert_memory (buffer, -1, memory);
+
+  g_queue_push_tail(&self->ts_samples, buffer);
+  g_cond_signal(&self->cond);
+
+  g_mutex_unlock(&self->lock);
 }
 
 static GstFlowReturn

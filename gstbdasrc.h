@@ -73,7 +73,12 @@ G_BEGIN_DECLS
 
     GstBdaGrabber *grabber;
 
-    void (*got_buffer) (GstBdaSrc *bda_src, gpointer data, gsize size);
+    GCond cond;
+    GMutex lock;
+    /* MPEG-2 transport stream samples. */
+    GQueue ts_samples;
+
+    void (*sample_received) (GstBdaSrc *bda_src, gpointer data, gsize size);
   };
 
   struct _GstBdaSrcClass
