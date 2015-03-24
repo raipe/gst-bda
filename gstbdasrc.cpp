@@ -210,6 +210,9 @@ static gboolean gst_bdasrc_stop (GstBaseSrc * bsrc);
 static GstStateChangeReturn gst_bdasrc_change_state (GstElement * element,
     GstStateChange transition);
 
+static gboolean gst_bdasrc_unlock (GstBaseSrc * bsrc);
+static gboolean gst_bdasrc_unlock_stop (GstBaseSrc * bsrc);
+
 static gboolean gst_bdasrc_is_seekable (GstBaseSrc * bsrc);
 static gboolean gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size);
 
@@ -264,6 +267,8 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
   gstbasesrc_class->stop = GST_DEBUG_FUNCPTR (gst_bdasrc_stop);
   gstbasesrc_class->is_seekable = GST_DEBUG_FUNCPTR (gst_bdasrc_is_seekable);
   gstbasesrc_class->get_size = GST_DEBUG_FUNCPTR (gst_bdasrc_get_size);
+  gstbasesrc_class->unlock = GST_DEBUG_FUNCPTR (gst_bdasrc_unlock);
+  gstbasesrc_class->unlock_stop = GST_DEBUG_FUNCPTR (gst_bdasrc_unlock_stop);
 
   gstpushsrc_class->create = GST_DEBUG_FUNCPTR (gst_bdasrc_create);
 
@@ -667,20 +672,21 @@ gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
 
   g_mutex_lock (&self->lock);
 
-  /* FIXME: Hard coded max size. */
-  while (g_queue_get_length (&self->ts_samples) >= 100) {
-    buffer = (GstBuffer *) g_queue_pop_head (&self->ts_samples);
-    GST_WARNING_OBJECT (self, "Dropping TS sample");
-    gst_buffer_unref (buffer);
+  if (!self->flushing) {
+    /* FIXME: Hard coded max size. */
+    while (g_queue_get_length (&self->ts_samples) >= 100) {
+      buffer = (GstBuffer *) g_queue_pop_head (&self->ts_samples);
+      GST_WARNING_OBJECT (self, "Dropping TS sample");
+      gst_buffer_unref (buffer);
+    }
+
+    buffer = gst_buffer_new ();
+    memory = gst_allocator_alloc (NULL, size, NULL);
+    gst_buffer_insert_memory (buffer, -1, memory);
+
+    g_queue_push_tail (&self->ts_samples, buffer);
+    g_cond_signal (&self->cond);
   }
-
-  buffer = gst_buffer_new ();
-  memory = gst_allocator_alloc (NULL, size, NULL);
-  gst_buffer_insert_memory (buffer, -1, memory);
-
-  g_queue_push_tail (&self->ts_samples, buffer);
-  g_cond_signal (&self->cond);
-
   g_mutex_unlock (&self->lock);
 }
 
@@ -689,13 +695,22 @@ gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buf)
 {
   GstBdaSrc *self = GST_BDASRC (src);
 
-  g_mutex_lock(&self->lock);
-  while (g_queue_is_empty(&self->ts_samples)) {
-    g_cond_wait(&self->cond, &self->lock);
+  g_mutex_lock (&self->lock);
+  while (g_queue_is_empty (&self->ts_samples)) {
+    g_cond_wait (&self->cond, &self->lock);
   }
 
-  *buf = (GstBuffer*)g_queue_pop_head(&self->ts_samples);
-  g_mutex_unlock(&self->lock);
+  *buf = (GstBuffer *) g_queue_pop_head (&self->ts_samples);
+  g_mutex_unlock (&self->lock);
+
+  if (self->flushing) {
+    if (*buf) {
+      gst_buffer_unref (*buf);
+      *buf = NULL;
+    }
+    GST_DEBUG_OBJECT (self, "Flushing");
+    return GST_FLOW_FLUSHING;
+  }
 
   return GST_FLOW_OK;
 }
@@ -712,6 +727,7 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
   switch (transition) {
     case GST_STATE_CHANGE_NULL_TO_READY:
       gst_bdasrc_create_graph (src);
+      src->flushing = FALSE;
       break;
     default:
       break;
@@ -754,6 +770,33 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
     src->media_control->Release ();
     src->media_control = NULL;
   }
+
+  return TRUE;
+}
+
+static gboolean
+gst_bdasrc_unlock (GstBaseSrc * bsrc)
+{
+  GstBdaSrc *self = GST_BDASRC (bsrc);
+
+  g_mutex_lock (&self->lock);
+  self->flushing = TRUE;
+  g_cond_signal (&self->cond);
+  g_mutex_unlock (&self->lock);
+
+  return TRUE;
+}
+
+static gboolean
+gst_bdasrc_unlock_stop (GstBaseSrc * bsrc)
+{
+  GstBdaSrc *self = GST_BDASRC (bsrc);
+
+  g_mutex_lock (&self->lock);
+  self->flushing = FALSE;
+  g_queue_foreach (&self->ts_samples, (GFunc) gst_buffer_unref, NULL);
+  g_queue_clear (&self->ts_samples);
+  g_mutex_unlock (&self->lock);
 
   return TRUE;
 }

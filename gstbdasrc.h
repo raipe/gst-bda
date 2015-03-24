@@ -75,6 +75,7 @@ G_BEGIN_DECLS
 
     GCond cond;
     GMutex lock;
+    gboolean flushing;
     /* MPEG-2 transport stream samples. */
     GQueue ts_samples;
 
