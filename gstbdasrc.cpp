@@ -71,6 +71,8 @@ enum
 #define DEFAULT_TRANSMISSION_MODE BDA_XMIT_MODE_8K
 #define DEFAULT_HIERARCHY BDA_HALPHA_NOT_SET
 
+/* Define smart pointers for BDA COM interface types.
+   Unlike CComPtr, these don't require ATL.  */
 _COM_SMARTPTR_TYPEDEF (IBaseFilter, __uuidof (IBaseFilter));
 _COM_SMARTPTR_TYPEDEF (ICreateDevEnum, __uuidof (ICreateDevEnum));
 _COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
