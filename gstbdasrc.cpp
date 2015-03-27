@@ -41,6 +41,7 @@
 #include <bdaiface.h>
 #include <tuner.h>
 #include "gstbdagrabber.h"
+#include "gstbdautil.h"
 
 GST_DEBUG_CATEGORY_STATIC (gstbdasrc_debug);
 #define GST_CAT_DEFAULT (gstbdasrc_debug)
@@ -592,7 +593,8 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
       gst_bdasrc_connect_filters (src, network_provider, src->tuner,
       src->filter_graph);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to connect tuner: 0x%x", res);
+    GST_ERROR_OBJECT (src, "Unable to connect tuner: %s (0x%x)",
+        bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
@@ -726,7 +728,8 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
 
   switch (transition) {
     case GST_STATE_CHANGE_NULL_TO_READY:
-      gst_bdasrc_create_graph (src);
+      if (!gst_bdasrc_create_graph (src))
+        ret = GST_STATE_CHANGE_FAILURE;
       src->flushing = FALSE;
       break;
     default:
