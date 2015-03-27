@@ -21,8 +21,10 @@
 #define __GST_BDAUTIL_H__
 
 #include <string>
+#include <comdef.h>
 #include <winerror.h>
 
 std::string bda_err_to_str (HRESULT hr);
+std::string bda_get_tuner_name (IMoniker * tuner_moniker);
 
 #endif

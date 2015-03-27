@@ -41,7 +41,22 @@ trim_string (char *str)
   return str;
 }
 
-std::string bda_err_to_str (HRESULT hr)
+static std::string
+mb_to_wc (const wchar_t * wc)
+{
+  char mb[512];
+  size_t size;
+  errno_t err = wcstombs_s (&size, mb, wc, sizeof (mb));
+
+  if (err != 0) {
+    return "";
+  }
+
+  return mb;
+}
+
+std::string
+bda_err_to_str (HRESULT hr)
 {
   char error_string[MAX_ERROR_TEXT_LEN];
   DWORD res = AMGetErrorTextA (hr, error_string, sizeof (error_string));
@@ -51,4 +66,31 @@ std::string bda_err_to_str (HRESULT hr)
   }
 
   return trim_string (error_string);
+}
+
+std::string
+bda_get_tuner_name (IMoniker * tuner_moniker)
+{
+  std::string name;
+
+  IPropertyBagPtr property_bag;
+  HRESULT res = tuner_moniker->BindToStorage (0, 0, IID_IPropertyBag,
+      reinterpret_cast < void **>(&property_bag));
+  if (FAILED (res)) {
+    return name;
+  }
+
+  VARIANT var_name;
+  VariantInit (&var_name);
+  res = property_bag->Read (L"FriendlyName", &var_name, 0);
+
+  if (FAILED (res)) {
+    VariantClear (&var_name);
+    return name;
+  }
+
+  name = mb_to_wc (var_name.bstrVal);
+  VariantClear (&var_name);
+
+  return name;
 }
