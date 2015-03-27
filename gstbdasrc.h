@@ -67,6 +67,7 @@ G_BEGIN_DECLS
     int hierarchy_information;
 
     IBaseFilter* tuner;
+    IBaseFilter* capture;
     IGraphBuilder* filter_graph;
     IMediaControl* media_control;
 

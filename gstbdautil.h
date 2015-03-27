@@ -20,11 +20,28 @@
 #ifndef __GST_BDAUTIL_H__
 #define __GST_BDAUTIL_H__
 
+#include <winsock2.h>
 #include <string>
 #include <comdef.h>
 #include <winerror.h>
+#include <qedit.h>
+#include "gstbdasrc.h"
+
+/* Define smart pointers for BDA COM interface types.
+   Unlike CComPtr, these don't require ATL. */
+_COM_SMARTPTR_TYPEDEF(IBaseFilter, __uuidof (IBaseFilter));
+_COM_SMARTPTR_TYPEDEF(IEnumPins, __uuidof (IEnumPins));
+_COM_SMARTPTR_TYPEDEF(IPin, __uuidof (IPin));
+_COM_SMARTPTR_TYPEDEF(ISampleGrabber, __uuidof (ISampleGrabber));
 
 std::string bda_err_to_str (HRESULT hr);
 std::string bda_get_tuner_name (IMoniker * tuner_moniker);
+
+HRESULT gst_bdasrc_connect_filters(GstBdaSrc * src, IBaseFilter * filter_upstream,
+    IBaseFilter * filter_downstream, IGraphBuilder * filter_graph);
+HRESULT gst_bdasrc_load_filter(GstBdaSrc * src, ICreateDevEnum * sys_dev_enum,
+    REFCLSID clsid, IBaseFilter * upstream_filter, IBaseFilter ** downstream_filter);
+BOOL gst_bdasrc_create_ts_capture(GstBdaSrc * bda_src,
+    ICreateDevEnum * sys_dev_enum, IBaseFilterPtr &ts_capture);
 
 #endif
