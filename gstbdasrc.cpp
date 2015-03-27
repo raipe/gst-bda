@@ -82,6 +82,7 @@ _COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
 _COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
 _COM_SMARTPTR_TYPEDEF (IEnumPins, __uuidof (IEnumPins));
 _COM_SMARTPTR_TYPEDEF (IPin, __uuidof (IPin));
+_COM_SMARTPTR_TYPEDEF (ISampleGrabber, __uuidof (ISampleGrabber));
 _COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
 _COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
 
@@ -632,15 +633,25 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  res = src->filter_graph->AddFilter (ts_capture, L"TsSampleGrabber");
+  res = src->filter_graph->AddFilter (ts_capture, L"TS capture");
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to add TS capture filter to graph");
     return FALSE;
   }
 
+  ISampleGrabberPtr sample_grabber;
+  res = ts_capture->QueryInterface (&sample_grabber);
+  if (FAILED (res)) {
+    GST_ERROR_OBJECT (src, "Unable to query ISampleGrabber interface: %s"
+        " (0x%x)", bda_err_to_str (res).c_str (), res);
+    return FALSE;
+  }
+
+  /* FIXME: connect ts_capture -> sample_grabber */
+
   res = gst_bdasrc_connect_filters (src, ts_capture, demux, src->filter_graph);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to connect TS capture: %s (0x%x)",
+    GST_ERROR_OBJECT (src, "Unable to connect TS capture to demux: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
