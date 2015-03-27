@@ -50,6 +50,7 @@ GST_DEBUG_CATEGORY_STATIC (gstbdasrc_debug);
 enum
 {
   ARG_0,
+  ARG_BDASRC_DEVICE_INDEX,
   ARG_BDASRC_FREQUENCY,
   ARG_BDASRC_SYM_RATE,
   ARG_BDASRC_BANDWIDTH,
@@ -61,7 +62,7 @@ enum
   ARG_BDASRC_HIERARCHY_INF
 };
 
-#define DEFAULT_ADAPTER 0
+#define DEFAULT_DEVICE_INDEX 0
 #define DEFAULT_FREQUENCY 0
 #define DEFAULT_SYMBOL_RATE 0
 #define DEFAULT_BANDWIDTH 8
@@ -273,6 +274,11 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 
   gstpushsrc_class->create = GST_DEBUG_FUNCPTR (gst_bdasrc_create);
 
+  g_object_class_install_property (gobject_class, ARG_BDASRC_DEVICE_INDEX,
+      g_param_spec_uint ("device", "Device index", "BDA device index, e.g. 0"
+          " for the first device", 0, 64, DEFAULT_DEVICE_INDEX,
+          (GParamFlags) G_PARAM_READWRITE));
+
   g_object_class_install_property (gobject_class, ARG_BDASRC_FREQUENCY,
       g_param_spec_uint ("frequency", "frequency", "Frequency in kHz",
           0, G_MAXUINT, DEFAULT_FREQUENCY, (GParamFlags) G_PARAM_READWRITE));
@@ -331,7 +337,7 @@ gst_bdasrc_init (GstBdaSrc * self)
 
   gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
 
-  self->adapter_number = DEFAULT_ADAPTER;
+  self->device_index = DEFAULT_DEVICE_INDEX;
   self->frequency = 0;
   self->symbol_rate = DEFAULT_SYMBOL_RATE;
   self->bandwidth = DEFAULT_BANDWIDTH;
@@ -367,6 +373,9 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
+    case ARG_BDASRC_DEVICE_INDEX:
+      object->device_index = g_value_get_uint (value);
+      break;
     case ARG_BDASRC_FREQUENCY:
       object->frequency = g_value_get_uint (value);
       break;
@@ -409,6 +418,9 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
+    case ARG_BDASRC_DEVICE_INDEX:
+      g_value_set_uint (value, object->device_index);
+      break;
     case ARG_BDASRC_FREQUENCY:
       g_value_set_uint (value, object->frequency);
       break;
@@ -478,11 +490,10 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  if (src->adapter_number > 0) {
-    res = enum_tuner->Skip (src->adapter_number);
+  if (src->device_index > 0) {
+    res = enum_tuner->Skip (src->device_index);
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "BDA adapter %d doesn't exist",
-          src->adapter_number);
+      GST_ERROR_OBJECT (src, "BDA device %d doesn't exist", src->device_index);
       return FALSE;
     }
   }
@@ -494,6 +505,9 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     GST_ERROR_OBJECT (src, "Unable to get BDA tuner");
     return FALSE;
   }
+
+  std::string tuner_name = bda_get_tuner_name (tuner_moniker);
+  GST_INFO_OBJECT (src, "Using BDA tuner device '%s'", tuner_name.c_str ());
 
   res = tuner_moniker->BindToObject (NULL, NULL, IID_IBaseFilter,
       (void **) &src->tuner);

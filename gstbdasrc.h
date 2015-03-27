@@ -53,8 +53,7 @@ G_BEGIN_DECLS
 
     gboolean need_tune;
 
-    int adapter_type;
-    int adapter_number;
+    int device_index;
 
     int frequency;
     int symbol_rate;
