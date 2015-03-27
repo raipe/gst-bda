@@ -649,6 +649,14 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 
   /* FIXME: connect ts_capture -> sample_grabber */
 
+  if (FAILED (sample_grabber->SetBufferSamples (TRUE)) ||
+      FAILED (sample_grabber->SetOneShot (FALSE)) ||
+      FAILED (sample_grabber->SetCallback (src->grabber, 0))) {
+    GST_ERROR_OBJECT (src, "Unable to configure ISampleGrabber interface: %s"
+        " (0x%x)", bda_err_to_str (res).c_str (), res);
+    return FALSE;
+  }
+
   res = gst_bdasrc_connect_filters (src, ts_capture, demux, src->filter_graph);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to connect TS capture to demux: %s (0x%x)",
