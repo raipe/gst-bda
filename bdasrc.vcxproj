@@ -105,7 +105,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;quartz.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)libgstbdasrc.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -130,7 +130,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;quartz.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)libgstbdasrc.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -152,7 +152,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;quartz.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)libgstbdasrc.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -180,7 +180,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;mfuuid.lib;quartz.lib;glib-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gstbase-1.0.lib;gstreamer-1.0.lib;gstvideo-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)libgstbdasrc.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -192,10 +192,12 @@
   <ItemGroup>
     <ClCompile Include="gstbdagrabber.cpp" />
     <ClCompile Include="gstbdasrc.cpp" />
+    <ClCompile Include="gstbdautil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gstbdagrabber.h" />
     <ClInclude Include="gstbdasrc.h" />
+    <ClInclude Include="gstbdautil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

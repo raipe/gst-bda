@@ -21,12 +21,18 @@
     <ClCompile Include="gstbdagrabber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gstbdautil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gstbdasrc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gstbdagrabber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gstbdautil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
