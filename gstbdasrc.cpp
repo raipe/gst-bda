@@ -640,7 +640,8 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 
   res = gst_bdasrc_connect_filters (src, ts_capture, demux, src->filter_graph);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to connect TS capture");
+    GST_ERROR_OBJECT (src, "Unable to connect TS capture: %s (0x%x)",
+        bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
