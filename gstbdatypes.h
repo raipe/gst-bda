@@ -31,7 +31,8 @@
 typedef enum
 {
   GST_BDA_UNKNOWN,
-  GST_BDA_DVB_C
+  GST_BDA_DVB_C,
+  GST_BDA_DVB_T
 } GstBdaInputType;
 
 /* Define smart pointers for BDA COM interface types.
@@ -44,10 +45,13 @@ _COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
 _COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
 _COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
 _COM_SMARTPTR_TYPEDEF (IEnumPins, __uuidof (IEnumPins));
+_COM_SMARTPTR_TYPEDEF (IEnumTuningSpaces, __uuidof (IEnumTuningSpaces));
 _COM_SMARTPTR_TYPEDEF (IDigitalLocator, __uuidof (IDigitalLocator));
 _COM_SMARTPTR_TYPEDEF (IPin, __uuidof (IPin));
 _COM_SMARTPTR_TYPEDEF (ISampleGrabber, __uuidof (ISampleGrabber));
 _COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
 _COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
+_COM_SMARTPTR_TYPEDEF (ITuningSpace, __uuidof (ITuningSpace));
+_COM_SMARTPTR_TYPEDEF (ITuningSpaceContainer, __uuidof (ITuningSpaceContainer));
 
 #endif
