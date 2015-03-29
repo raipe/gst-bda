@@ -201,7 +201,8 @@ gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
     {
       HRESULT res = locator.CreateInstance (__uuidof (DVBCLocator));
       if (FAILED (res)) {
-        GST_ERROR_OBJECT (src, "Unable to create DVB-C locator");
+        GST_ERROR_OBJECT (src, "Unable to create DVB-C locator: %s (0x%x)",
+            bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
       locator->put_CarrierFrequency (src->frequency);
@@ -211,6 +212,33 @@ gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
       locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
       locator->put_OuterFEC (BDA_FEC_METHOD_NOT_SET);
       locator->put_OuterFECRate (BDA_BCC_RATE_NOT_SET);
+      break;
+    }
+    case GST_BDA_DVB_T:
+    {
+      HRESULT res = locator.CreateInstance (__uuidof (DVBTLocator));
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to create DVB-T locator: %s (0x%x)",
+            bda_err_to_str (res).c_str (), res);
+        return FALSE;
+      }
+
+      IDVBTLocatorPtr dvb_t_locator;
+      res = locator->QueryInterface (&dvb_t_locator);
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to get DVB-T locator interface: %s"
+            " (0x%x)", bda_err_to_str (res).c_str (), res);
+        return FALSE;
+      }
+
+      dvb_t_locator->put_CarrierFrequency (src->frequency);
+      dvb_t_locator->put_Bandwidth (src->bandwidth);
+      //dvb_t_locator->put_Guard(src->guard_interval);
+      //dvb_t_locator->put_Mode(src->transmission_mode);
+      dvb_t_locator->put_Modulation (src->modulation);
+      dvb_t_locator->put_HAlpha (BDA_HALPHA_NOT_SET);
+      dvb_t_locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
+      dvb_t_locator->put_LPInnerFECRate (BDA_BCC_RATE_NOT_SET);
       break;
     }
     default:
