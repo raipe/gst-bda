@@ -124,6 +124,8 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
     const GUID & guid = desc[i].guidFunction;
     if (IsEqualGUID (guid, KSNODE_BDA_QAM_DEMODULATOR)) {
       return GST_BDA_DVB_C;
+    } else if (IsEqualGUID (guid, KSNODE_BDA_COFDM_DEMODULATOR)) {
+      return GST_BDA_DVB_T;
     }
   }
 
@@ -134,18 +136,65 @@ BOOL
 gst_bdasrc_create_tuning_space (GstBdaSrc * src,
     IDVBTuningSpacePtr & tuning_space)
 {
-  HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
+  CLSID network_type;
+  switch (src->input_type) {
+    case GST_BDA_DVB_C:
+      network_type = CLSID_DVBCNetworkProvider;
+      break;
+    case GST_BDA_DVB_T:
+      network_type = CLSID_DVBTNetworkProvider;
+      break;
+    default:
+      return FALSE;
+  }
+
+  // First look for an existing tuning space that matches network type.
+  ITuningSpaceContainerPtr tuning_spaces;
+  HRESULT res = tuning_spaces.CreateInstance (__uuidof (SystemTuningSpaces));
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Error creating tuning space: %s (0x%x)",
-        bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
-  switch (src->input_type) {
-    case GST_BDA_DVB_C:
+  IEnumTuningSpacesPtr space_enum;
+  res = tuning_spaces->get_EnumTuningSpaces (&space_enum);
+  if (FAILED (res)) {
+    return FALSE;
+  }
+
+  ITuningSpacePtr ts;
+  while (space_enum->Next (1, &ts, 0) == S_OK) {
+    CLSID type;
+    res = ts->get__NetworkType (&type);
+    if (FAILED (res) || type == GUID_NULL) {
+      continue;
+    }
+
+    if (type == network_type) {
+      res = ts->QueryInterface (&tuning_space);
+      if (SUCCEEDED (res)) {
+        return TRUE;
+      }
+    }
+  }
+
+  // No existing tuning space found, create a new one.
+  if (src->input_type == GST_BDA_DVB_C || src->input_type == GST_BDA_DVB_T) {
+    HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
+    if (FAILED (res)) {
+      GST_ERROR_OBJECT (src, "Error creating DVB tuning space: %s (0x%x)",
+          bda_err_to_str (res).c_str (), res);
+      return FALSE;
+    }
+
+    if (src->input_type == GST_BDA_DVB_C) {
       tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
       tuning_space->put_SystemType (DVB_Cable);
-      return TRUE;
+    } else {
+      tuning_space->put__NetworkType (DVB_TERRESTRIAL_TV_NETWORK_TYPE);
+      tuning_space->put_SystemType (DVB_Terrestrial);
+    }
+
+    return TRUE;
   }
 
   return FALSE;
