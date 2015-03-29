@@ -27,27 +27,27 @@
 #include <strmif.h>
 
 /* Supported BDA input device types. */
-typedef enum /*< flags=0 >*/
+/* TODO: DVB-T, DVB-S, ATSC */
+typedef enum
 {
   GST_BDA_UNKNOWN,
   GST_BDA_DVB_C
-  /* TODO: DVB-T, DVB-S, ATSC */
 } GstBdaInputType;
 
 /* Define smart pointers for BDA COM interface types.
    Unlike CComPtr, these don't require ATL. */
-_COM_SMARTPTR_TYPEDEF(IBaseFilter, __uuidof (IBaseFilter));
-_COM_SMARTPTR_TYPEDEF(IBDA_SignalStatistics, __uuidof (IBDA_SignalStatistics));
-_COM_SMARTPTR_TYPEDEF(IBDA_Topology, __uuidof (IBDA_Topology));
-_COM_SMARTPTR_TYPEDEF(ICreateDevEnum, __uuidof (ICreateDevEnum));
-_COM_SMARTPTR_TYPEDEF(IDVBCLocator, __uuidof (IDVBCLocator));
-_COM_SMARTPTR_TYPEDEF(IDVBTuneRequest, __uuidof (IDVBTuneRequest));
-_COM_SMARTPTR_TYPEDEF(IDVBTuningSpace, __uuidof (IDVBTuningSpace));
-_COM_SMARTPTR_TYPEDEF(IEnumPins, __uuidof (IEnumPins));
-_COM_SMARTPTR_TYPEDEF(IDigitalLocator, __uuidof (IDigitalLocator));
-_COM_SMARTPTR_TYPEDEF(IPin, __uuidof (IPin));
-_COM_SMARTPTR_TYPEDEF(ISampleGrabber, __uuidof (ISampleGrabber));
-_COM_SMARTPTR_TYPEDEF(IScanningTuner, __uuidof (IScanningTuner));
-_COM_SMARTPTR_TYPEDEF(ITuneRequest, __uuidof (ITuneRequest));
+_COM_SMARTPTR_TYPEDEF (IBaseFilter, __uuidof (IBaseFilter));
+_COM_SMARTPTR_TYPEDEF (IBDA_SignalStatistics, __uuidof (IBDA_SignalStatistics));
+_COM_SMARTPTR_TYPEDEF (IBDA_Topology, __uuidof (IBDA_Topology));
+_COM_SMARTPTR_TYPEDEF (ICreateDevEnum, __uuidof (ICreateDevEnum));
+_COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
+_COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
+_COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
+_COM_SMARTPTR_TYPEDEF (IEnumPins, __uuidof (IEnumPins));
+_COM_SMARTPTR_TYPEDEF (IDigitalLocator, __uuidof (IDigitalLocator));
+_COM_SMARTPTR_TYPEDEF (IPin, __uuidof (IPin));
+_COM_SMARTPTR_TYPEDEF (ISampleGrabber, __uuidof (ISampleGrabber));
+_COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
+_COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
 
 #endif
