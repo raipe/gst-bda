@@ -3,7 +3,8 @@ Windows BDA capture plugin for GStreamer.
 
 ## Supported input devices
 
-Currently only DVB-C (cable) input devices are supported.
+Only DVB-C (cable) input devices have been tested. DVB-T is supported, but
+untested.
 
 ## Build requirements
 - [Visual Studio 2013 or later](https://www.visualstudio.com/)
