@@ -120,16 +120,35 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
     return GST_BDA_UNKNOWN;
   }
 
-  for (ULONG i = 0; i < n_desc; i++)
-  {
-    const GUID& guid = desc[i].guidFunction;
-    if (IsEqualGUID(guid, KSNODE_BDA_QAM_DEMODULATOR))
-    {
-       return GST_BDA_DVB_C;
+  for (ULONG i = 0; i < n_desc; i++) {
+    const GUID & guid = desc[i].guidFunction;
+    if (IsEqualGUID (guid, KSNODE_BDA_QAM_DEMODULATOR)) {
+      return GST_BDA_DVB_C;
     }
   }
 
   return GST_BDA_UNKNOWN;
+}
+
+BOOL
+gst_bdasrc_create_tuning_space (GstBdaSrc * src, GstBdaInputType type,
+    IDVBTuningSpacePtr & tuning_space)
+{
+  HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
+  if (FAILED (res)) {
+    GST_ERROR_OBJECT (src, "Error creating tuning space: %s (0x%x)",
+        bda_err_to_str (res).c_str (), res);
+    return FALSE;
+  }
+
+  switch (type) {
+    case GST_BDA_DVB_C:
+      tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
+      tuning_space->put_SystemType (DVB_Cable);
+      return TRUE;
+  }
+
+  return FALSE;
 }
 
 HRESULT

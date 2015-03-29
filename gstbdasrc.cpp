@@ -504,15 +504,11 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  /* FIXME: Hard coded to DVB-C */
   IDVBTuningSpacePtr tuning_space;
-  res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
-  if (FAILED (res)) {
+  if (!gst_bdasrc_create_tuning_space (src, type, tuning_space)) {
     GST_ERROR_OBJECT (src, "Unable to create tuning space");
     return FALSE;
   }
-  tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
-  tuning_space->put_SystemType (DVB_Cable);
 
   /* FIXME: Hard coded to DVB-C */
   IDVBCLocatorPtr locator;
