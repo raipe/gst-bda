@@ -64,39 +64,12 @@ enum
 #define DEFAULT_FREQUENCY 0
 #define DEFAULT_SYMBOL_RATE 0
 #define DEFAULT_BANDWIDTH 8
-#define DEFAULT_CODE_RATE_HP BDA_BCC_RATE_NOT_SET
-#define DEFAULT_CODE_RATE_LP BDA_BCC_RATE_1_2
 #define DEFAULT_GUARD BDA_GUARD_1_16
 #define DEFAULT_MODULATION BDA_MOD_16QAM
 #define DEFAULT_TRANSMISSION_MODE BDA_XMIT_MODE_8K
 #define DEFAULT_HIERARCHY BDA_HALPHA_NOT_SET
 
 static void gst_bdasrc_output_frontend_stats (GstBdaSrc * src);
-
-#define GST_TYPE_BDASRC_CODE_RATE (gst_bdasrc_code_rate_get_type ())
-static GType
-gst_bdasrc_code_rate_get_type (void)
-{
-  static GType bdasrc_code_rate_type = 0;
-  static GEnumValue code_rate_types[] = {
-    {BDA_BCC_RATE_NOT_SET, "NONE", "NONE"},
-    {BDA_BCC_RATE_1_2, "1/2", "1/2"},
-    {BDA_BCC_RATE_2_3, "2/3", "2/3"},
-    {BDA_BCC_RATE_3_4, "3/4", "3/4"},
-    {BDA_BCC_RATE_4_5, "4/5", "4/5"},
-    {BDA_BCC_RATE_5_6, "5/6", "5/6"},
-    {BDA_BCC_RATE_6_7, "6/7", "6/7"},
-    {BDA_BCC_RATE_7_8, "7/8", "7/8"},
-    {BDA_BCC_RATE_8_9, "8/9", "8/9"},
-    {0, NULL, NULL},
-  };
-
-  if (!bdasrc_code_rate_type) {
-    bdasrc_code_rate_type =
-        g_enum_register_static ("GstBdaSrcCodeRate", code_rate_types);
-  }
-  return bdasrc_code_rate_type;
-}
 
 #define GST_TYPE_BDASRC_MODULATION (gst_bdasrc_modulation_get_type ())
 static GType
@@ -273,18 +246,6 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           "Bandwidth (DVB-T)", 5, 8, DEFAULT_BANDWIDTH,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_CODE_RATE_HP,
-      g_param_spec_enum ("code-rate-hp", "code-rate-hp",
-          "High Priority Code Rate (DVB-T, DVB-S and DVB-C)",
-          GST_TYPE_BDASRC_CODE_RATE, DEFAULT_CODE_RATE_HP,
-          (GParamFlags) G_PARAM_READWRITE));
-
-  g_object_class_install_property (gobject_class, ARG_BDASRC_CODE_RATE_LP,
-      g_param_spec_enum ("code-rate-lp", "code-rate-lp",
-          "Low Priority Code Rate (DVB-T)",
-          GST_TYPE_BDASRC_CODE_RATE, DEFAULT_CODE_RATE_LP,
-          (GParamFlags) G_PARAM_READWRITE));
-
   g_object_class_install_property (gobject_class, ARG_BDASRC_GUARD_INTERVAL,
       g_param_spec_enum ("guard-interval", "guard-interval",
           "Guard Interval (DVB-T)",
@@ -323,8 +284,6 @@ gst_bdasrc_init (GstBdaSrc * self)
   self->frequency = 0;
   self->symbol_rate = DEFAULT_SYMBOL_RATE;
   self->bandwidth = DEFAULT_BANDWIDTH;
-  self->code_rate_hp = DEFAULT_CODE_RATE_HP;
-  self->code_rate_lp = DEFAULT_CODE_RATE_LP;
   self->guard_interval = DEFAULT_GUARD;
   self->modulation = DEFAULT_MODULATION;
   self->transmission_mode = DEFAULT_TRANSMISSION_MODE;
@@ -365,23 +324,17 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
     case ARG_BDASRC_BANDWIDTH:
       object->bandwidth = g_value_get_int (value);
       break;
-    case ARG_BDASRC_CODE_RATE_HP:
-      object->code_rate_hp = g_value_get_enum (value);
-      break;
-    case ARG_BDASRC_CODE_RATE_LP:
-      object->code_rate_lp = g_value_get_enum (value);
-      break;
     case ARG_BDASRC_GUARD_INTERVAL:
-      object->guard_interval = g_value_get_enum (value);
+      object->guard_interval = (GuardInterval) g_value_get_enum (value);
       break;
     case ARG_BDASRC_MODULATION:
       object->modulation = (ModulationType) g_value_get_enum (value);
       break;
     case ARG_BDASRC_TRANSMISSION_MODE:
-      object->transmission_mode = g_value_get_enum (value);
+      object->transmission_mode = (TransmissionMode) g_value_get_enum (value);
       break;
     case ARG_BDASRC_HIERARCHY_INF:
-      object->hierarchy_information = g_value_get_enum (value);
+      object->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -409,12 +362,6 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
       break;
     case ARG_BDASRC_BANDWIDTH:
       g_value_set_int (value, object->bandwidth);
-      break;
-    case ARG_BDASRC_CODE_RATE_HP:
-      g_value_set_enum (value, object->code_rate_hp);
-      break;
-    case ARG_BDASRC_CODE_RATE_LP:
-      g_value_set_enum (value, object->code_rate_lp);
       break;
     case ARG_BDASRC_GUARD_INTERVAL:
       g_value_set_enum (value, object->guard_interval);

@@ -233,10 +233,10 @@ gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
 
       dvb_t_locator->put_CarrierFrequency (src->frequency);
       dvb_t_locator->put_Bandwidth (src->bandwidth);
-      //dvb_t_locator->put_Guard(src->guard_interval);
-      //dvb_t_locator->put_Mode(src->transmission_mode);
+      dvb_t_locator->put_Guard(src->guard_interval);
+      dvb_t_locator->put_Mode(src->transmission_mode);
       dvb_t_locator->put_Modulation (src->modulation);
-      dvb_t_locator->put_HAlpha (BDA_HALPHA_NOT_SET);
+      dvb_t_locator->put_HAlpha(src->hierarchy_information);
       dvb_t_locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
       dvb_t_locator->put_LPInnerFECRate (BDA_BCC_RATE_NOT_SET);
       break;

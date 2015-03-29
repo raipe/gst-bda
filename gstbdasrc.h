@@ -62,12 +62,10 @@ G_BEGIN_DECLS
     int symbol_rate;
 
     int bandwidth;
-    int code_rate_hp;
-    int code_rate_lp;
     ModulationType modulation;
-    int guard_interval;
-    int transmission_mode;
-    int hierarchy_information;
+    GuardInterval guard_interval;
+    TransmissionMode transmission_mode;
+    HierarchyAlpha hierarchy_information;
 
     IBaseFilter *tuner;
     IBaseFilter *capture;
