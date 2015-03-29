@@ -50,20 +50,6 @@ trim_string (char *str)
   return str;
 }
 
-static std::string
-mb_to_wc (const wchar_t * wc)
-{
-  char mb[512];
-  size_t size;
-  errno_t err = wcstombs_s (&size, mb, wc, sizeof (mb));
-
-  if (err != 0) {
-    return "";
-  }
-
-  return mb;
-}
-
 std::string
 bda_err_to_str (HRESULT hr)
 {
@@ -98,7 +84,13 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
     return name;
   }
 
-  name = mb_to_wc (var_name.bstrVal);
+  char mb[512];
+  size_t size;
+  errno_t err = wcstombs_s (&size, mb, var_name.bstrVal, sizeof (mb));
+  if (err == 0) {
+    name = mb;
+  }
+
   VariantClear (&var_name);
 
   return name;
