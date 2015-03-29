@@ -233,12 +233,38 @@ gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
 
       dvb_t_locator->put_CarrierFrequency (src->frequency);
       dvb_t_locator->put_Bandwidth (src->bandwidth);
-      dvb_t_locator->put_Guard(src->guard_interval);
-      dvb_t_locator->put_Mode(src->transmission_mode);
+      dvb_t_locator->put_Guard (src->guard_interval);
+      dvb_t_locator->put_Mode (src->transmission_mode);
       dvb_t_locator->put_Modulation (src->modulation);
-      dvb_t_locator->put_HAlpha(src->hierarchy_information);
+      dvb_t_locator->put_HAlpha (src->hierarchy_information);
       dvb_t_locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
       dvb_t_locator->put_LPInnerFECRate (BDA_BCC_RATE_NOT_SET);
+      break;
+    }
+    case GST_BDA_DVB_S:
+    {
+      HRESULT res = locator.CreateInstance (__uuidof (DVBSLocator));
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to create DVB-S locator: %s (0x%x)",
+            bda_err_to_str (res).c_str (), res);
+        return FALSE;
+      }
+
+      IDVBSLocatorPtr dvb_s_locator;
+      res = locator->QueryInterface (&dvb_s_locator);
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to get DVB-S locator interface: %s"
+            " (0x%x)", bda_err_to_str (res).c_str (), res);
+        return FALSE;
+      }
+      // FIXME: Add missing properties to GstBdaSrc.
+      dvb_s_locator->put_CarrierFrequency (src->frequency);
+      dvb_s_locator->put_SymbolRate (src->symbol_rate);
+      dvb_s_locator->put_Modulation (src->modulation);
+      //dvb_s_locator->put_OrbitalPosition(src->orbital_position);
+      //dvb_s_locator->put_WestPosition(src->west_position);
+      //dvb_s_locator->put_SignalPolarisation(src->polarisation);
+      //dvb_s_locator->put_InnerFECRate(src->fec);
       break;
     }
     default:
@@ -251,6 +277,7 @@ gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
+
   return TRUE;
 }
 
