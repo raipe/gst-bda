@@ -660,7 +660,7 @@ static void
 gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
 {
   GstBuffer *buffer;
-  GstMemory *memory;
+  GstMapInfo map;
 
   g_mutex_lock (&self->lock);
 
@@ -672,9 +672,10 @@ gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
       gst_buffer_unref (buffer);
     }
 
-    buffer = gst_buffer_new ();
-    memory = gst_allocator_alloc (NULL, size, NULL);
-    gst_buffer_insert_memory (buffer, -1, memory);
+    buffer = gst_buffer_new_and_alloc (size);
+    gst_buffer_map (buffer, &map, GST_MAP_WRITE);
+    memcpy (map.data, data, size);
+    gst_buffer_unmap (buffer, &map);
 
     g_queue_push_tail (&self->ts_samples, buffer);
     g_cond_signal (&self->cond);
