@@ -463,6 +463,9 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     case GST_BDA_DVB_C:
       network_type = CLSID_DVBCNetworkProvider;
       break;
+    case GST_BDA_DVB_S:
+      network_type = CLSID_DVBSNetworkProvider;
+      break;
     case GST_BDA_DVB_T:
       network_type = CLSID_DVBTNetworkProvider;
       break;
