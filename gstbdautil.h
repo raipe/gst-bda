@@ -27,13 +27,6 @@
 #include <qedit.h>
 #include "gstbdasrc.h"
 
-/* Define smart pointers for BDA COM interface types.
-   Unlike CComPtr, these don't require ATL. */
-_COM_SMARTPTR_TYPEDEF(IBaseFilter, __uuidof (IBaseFilter));
-_COM_SMARTPTR_TYPEDEF(IEnumPins, __uuidof (IEnumPins));
-_COM_SMARTPTR_TYPEDEF(IPin, __uuidof (IPin));
-_COM_SMARTPTR_TYPEDEF(ISampleGrabber, __uuidof (ISampleGrabber));
-
 std::string bda_err_to_str (HRESULT hr);
 std::string bda_get_tuner_name (IMoniker * tuner_moniker);
 
