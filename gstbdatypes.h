@@ -44,6 +44,7 @@ _COM_SMARTPTR_TYPEDEF(IDVBCLocator, __uuidof (IDVBCLocator));
 _COM_SMARTPTR_TYPEDEF(IDVBTuneRequest, __uuidof (IDVBTuneRequest));
 _COM_SMARTPTR_TYPEDEF(IDVBTuningSpace, __uuidof (IDVBTuningSpace));
 _COM_SMARTPTR_TYPEDEF(IEnumPins, __uuidof (IEnumPins));
+_COM_SMARTPTR_TYPEDEF(IDigitalLocator, __uuidof (IDigitalLocator));
 _COM_SMARTPTR_TYPEDEF(IPin, __uuidof (IPin));
 _COM_SMARTPTR_TYPEDEF(ISampleGrabber, __uuidof (ISampleGrabber));
 _COM_SMARTPTR_TYPEDEF(IScanningTuner, __uuidof (IScanningTuner));
