@@ -42,6 +42,7 @@ _COM_SMARTPTR_TYPEDEF (IBDA_SignalStatistics, __uuidof (IBDA_SignalStatistics));
 _COM_SMARTPTR_TYPEDEF (IBDA_Topology, __uuidof (IBDA_Topology));
 _COM_SMARTPTR_TYPEDEF (ICreateDevEnum, __uuidof (ICreateDevEnum));
 _COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
+_COM_SMARTPTR_TYPEDEF (IDVBTLocator, __uuidof (IDVBTLocator));
 _COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
 _COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
 _COM_SMARTPTR_TYPEDEF (IEnumPins, __uuidof (IEnumPins));
