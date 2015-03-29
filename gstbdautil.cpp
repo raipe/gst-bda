@@ -104,6 +104,34 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
   return name;
 }
 
+GstBdaInputType
+gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
+{
+  IBDA_TopologyPtr bda_topology;
+  HRESULT res = bda_src->tuner->QueryInterface (&bda_topology);
+  if (FAILED (res)) {
+    return GST_BDA_UNKNOWN;
+  }
+
+  BDANODE_DESCRIPTOR desc[32];
+  ULONG n_desc;
+  res = bda_topology->GetNodeDescriptors (&n_desc, _countof (desc), desc);
+  if (FAILED (res)) {
+    return GST_BDA_UNKNOWN;
+  }
+
+  for (ULONG i = 0; i < n_desc; i++)
+  {
+    const GUID& guid = desc[i].guidFunction;
+    if (IsEqualGUID(guid, KSNODE_BDA_QAM_DEMODULATOR))
+    {
+       return GST_BDA_DVB_C;
+    }
+  }
+
+  return GST_BDA_UNKNOWN;
+}
+
 HRESULT
 gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
     IBaseFilter * filter_downstream)

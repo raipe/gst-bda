@@ -497,6 +497,13 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
+  GstBdaInputType type = gst_bdasrc_get_input_type (src);
+  if (type == GST_BDA_UNKNOWN) {
+    GST_ERROR_OBJECT (src, "Can't determine device type for BDA tuner '%s'",
+        tuner_name.c_str ());
+    return FALSE;
+  }
+
   /* FIXME: Hard coded to DVB-C */
   IDVBTuningSpacePtr tuning_space;
   res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));

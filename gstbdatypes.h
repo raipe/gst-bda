@@ -26,6 +26,14 @@
 #include <qedit.h>
 #include <strmif.h>
 
+/* Supported BDA input device types. */
+typedef enum /*< flags=0 >*/
+{
+  GST_BDA_UNKNOWN,
+  GST_BDA_DVB_C
+  /* TODO: DVB-T, DVB-S, ATSC */
+} GstBdaInputType;
+
 /* Define smart pointers for BDA COM interface types.
    Unlike CComPtr, these don't require ATL. */
 _COM_SMARTPTR_TYPEDEF(IBaseFilter, __uuidof (IBaseFilter));
