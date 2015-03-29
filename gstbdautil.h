@@ -35,6 +35,8 @@ GstBdaInputType gst_bdasrc_get_input_type (GstBdaSrc * src);
 
 BOOL gst_bdasrc_create_tuning_space(GstBdaSrc * src, IDVBTuningSpacePtr & tuning_space);
 
+BOOL gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request);
+
 HRESULT gst_bdasrc_connect_filters (GstBdaSrc * src,
     IBaseFilter * filter_upstream, IBaseFilter * filter_downstream);
 

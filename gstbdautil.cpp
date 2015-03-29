@@ -151,6 +151,40 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
   return FALSE;
 }
 
+BOOL
+gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
+{
+  IDigitalLocatorPtr locator;
+  switch (src->input_type) {
+    case GST_BDA_DVB_C:
+    {
+      HRESULT res = locator.CreateInstance (__uuidof (DVBCLocator));
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to create DVB-C locator");
+        return FALSE;
+      }
+      locator->put_CarrierFrequency (src->frequency);
+      locator->put_SymbolRate (src->symbol_rate);
+      locator->put_Modulation (src->modulation);
+      locator->put_InnerFEC (BDA_FEC_METHOD_NOT_SET);
+      locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
+      locator->put_OuterFEC (BDA_FEC_METHOD_NOT_SET);
+      locator->put_OuterFECRate (BDA_BCC_RATE_NOT_SET);
+      break;
+    }
+    default:
+      return FALSE;
+  }
+
+  HRESULT res = tune_request->put_Locator (locator);
+  if (FAILED (res)) {
+    GST_ERROR_OBJECT (src, "Unable to set locator: %s (0x%x)",
+        bda_err_to_str (res).c_str (), res);
+    return FALSE;
+  }
+  return TRUE;
+}
+
 HRESULT
 gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
     IBaseFilter * filter_downstream)

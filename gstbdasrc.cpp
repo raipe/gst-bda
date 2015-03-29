@@ -506,25 +506,10 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   }
 
   IDVBTuningSpacePtr tuning_space;
-  if (!gst_bdasrc_create_tuning_space(src, tuning_space)) {
+  if (!gst_bdasrc_create_tuning_space (src, tuning_space)) {
     GST_ERROR_OBJECT (src, "Unable to create tuning space");
     return FALSE;
   }
-
-  /* FIXME: Hard coded to DVB-C */
-  IDVBCLocatorPtr locator;
-  res = locator.CreateInstance (__uuidof (DVBCLocator));
-  if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to create DVB-C locator");
-    return FALSE;
-  }
-  locator->put_CarrierFrequency (src->frequency);
-  locator->put_SymbolRate (src->symbol_rate);
-  locator->put_Modulation (src->modulation);
-  locator->put_InnerFEC (BDA_FEC_METHOD_NOT_SET);
-  locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
-  locator->put_OuterFEC (BDA_FEC_METHOD_NOT_SET);
-  locator->put_OuterFECRate (BDA_BCC_RATE_NOT_SET);
 
   CLSID network_type;
   switch (src->input_type) {
@@ -571,13 +556,8 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  dvb_tune_request->put_ONID (-1);
-  dvb_tune_request->put_SID (-1);
-  dvb_tune_request->put_TSID (-1);
-
-  res = dvb_tune_request->put_Locator (locator);
-  if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to put locator");
+  if (!gst_bdasrc_tune_request (src, dvb_tune_request)) {
+    GST_ERROR_OBJECT (src, "Unable to initialise tune request");
     return FALSE;
   }
 
