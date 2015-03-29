@@ -197,6 +197,7 @@
   <ItemGroup>
     <ClInclude Include="gstbdagrabber.h" />
     <ClInclude Include="gstbdasrc.h" />
+    <ClInclude Include="gstbdatypes.h" />
     <ClInclude Include="gstbdautil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
