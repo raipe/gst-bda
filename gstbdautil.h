@@ -31,7 +31,7 @@ std::string bda_err_to_str (HRESULT hr);
 std::string bda_get_tuner_name (IMoniker * tuner_moniker);
 
 HRESULT gst_bdasrc_connect_filters(GstBdaSrc * src, IBaseFilter * filter_upstream,
-    IBaseFilter * filter_downstream, IGraphBuilder * filter_graph);
+    IBaseFilter * filter_downstream);
 HRESULT gst_bdasrc_load_filter(GstBdaSrc * src, ICreateDevEnum * sys_dev_enum,
     REFCLSID clsid, IBaseFilter * upstream_filter, IBaseFilter ** downstream_filter);
 BOOL gst_bdasrc_create_ts_capture(GstBdaSrc * bda_src,

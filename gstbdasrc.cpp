@@ -588,9 +588,7 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  res =
-      gst_bdasrc_connect_filters (src, network_provider, src->tuner,
-      src->filter_graph);
+  res = gst_bdasrc_connect_filters (src, network_provider, src->tuner);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to connect tuner: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
@@ -615,7 +613,7 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  res = gst_bdasrc_connect_filters (src, ts_capture, demux, src->filter_graph);
+  res = gst_bdasrc_connect_filters (src, ts_capture, demux);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to connect TS capture to demux: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);

@@ -106,7 +106,7 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
 
 HRESULT
 gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
-    IBaseFilter * filter_downstream, IGraphBuilder * filter_graph)
+    IBaseFilter * filter_downstream)
 {
   IPinPtr pin_upstream;
   PIN_INFO pin_info_upstream;
@@ -151,7 +151,7 @@ gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
             continue;
 
           if ((pin_info_downstream.dir == PINDIR_INPUT) && (pinUp == NULL)) {
-            res = filter_graph->Connect (pin_upstream, pin_downstream);
+            res = src->filter_graph->Connect (pin_upstream, pin_downstream);
             if (SUCCEEDED (res)) {
               pin_info_downstream.pFilter->Release ();
               pin_info_upstream.pFilter->Release ();
@@ -228,9 +228,7 @@ gst_bdasrc_load_filter (GstBdaSrc * src, ICreateDevEnum * sys_dev_enum,
       return res;
     }
     /* Test connection to upstream filter. */
-    res =
-        gst_bdasrc_connect_filters (src, upstream_filter, filter,
-        src->filter_graph);
+    res = gst_bdasrc_connect_filters (src, upstream_filter, filter);
     if (SUCCEEDED (res)) {
       /* It's the filter we want. */
       filter->QueryInterface (downstream_filter);
@@ -286,9 +284,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
     GST_ERROR_OBJECT (bda_src, "Unable to set TS grabber media type");
     return FALSE;
   }
-  res =
-      gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture,
-      bda_src->filter_graph);
+  res = gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture);
   if (FAILED (res)) {
     media_type.subtype = KSDATAFORMAT_SUBTYPE_BDA_MPEG2_TRANSPORT;
     if (FAILED (sample_grabber->SetMediaType (&media_type))) {
@@ -296,9 +292,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
       return FALSE;
     }
 
-    res =
-        gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture,
-        bda_src->filter_graph);
+    res = gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture);
     if (FAILED (res)) {
       GST_ERROR_OBJECT (bda_src, "Unable to connect TS capture: %s"
           " (0x%x)", bda_err_to_str (res).c_str (), res);
@@ -306,9 +300,9 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
     }
   }
 
-  if (FAILED (sample_grabber->SetBufferSamples (TRUE)) ||
-      FAILED (sample_grabber->SetOneShot (FALSE)) ||
-      FAILED (sample_grabber->SetCallback (bda_src->grabber, 0))) {
+  if (FAILED (res = sample_grabber->SetBufferSamples (TRUE)) ||
+      FAILED (res = sample_grabber->SetOneShot (FALSE)) ||
+      FAILED (res = sample_grabber->SetCallback (bda_src->ts_grabber, 0))) {
     GST_ERROR_OBJECT (bda_src,
         "Unable to configure ISampleGrabber interface: %s" " (0x%x)",
         bda_err_to_str (res).c_str (), res);
