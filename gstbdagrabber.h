@@ -21,10 +21,8 @@
 #define _GST_BDAGRABBER_H__
 
 #include <winsock2.h>
-// To obtain Qedit.h, download the Microsoft Windows SDK Update for Windows Vista and .NET Framework 3.0:
-// http://go.microsoft.com/fwlink/p/?linkid=129787
-#include <qedit.h>
 #include "gstbdasrc.h"
+#include "gstbdatypes.h"
 
 /** ISampleGrabber filter calls SampleCB function on incoming transport stream
     samples. */
