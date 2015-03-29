@@ -25,7 +25,8 @@
 #include <winsock2.h>
 #include <bdatypes.h>
 #include <control.h>
-#include <strmif.h>
+#include <tuner.h>
+#include "gstbdatypes.h"
 
 class GstBdaGrabber;
 
@@ -66,12 +67,12 @@ G_BEGIN_DECLS
     int transmission_mode;
     int hierarchy_information;
 
-    IBaseFilter* tuner;
-    IBaseFilter* capture;
-    IGraphBuilder* filter_graph;
-    IMediaControl* media_control;
+    IBaseFilter *tuner;
+    IBaseFilter *capture;
+    IGraphBuilder *filter_graph;
+    IMediaControl *media_control;
 
-    GstBdaGrabber *grabber;
+    GstBdaGrabber *ts_grabber;
 
     GCond cond;
     GMutex lock;

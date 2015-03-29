@@ -30,7 +30,6 @@
 #include "gstbdasrc.h"
 #include <gst/gst.h>
 #include <string.h>
-#include <comdef.h>
 #include <control.h>
 #include <dshow.h>
 #include <mmreg.h>
@@ -39,7 +38,6 @@
 #include <bdatypes.h>
 #include <bdamedia.h>
 #include <bdaiface.h>
-#include <tuner.h>
 #include "gstbdagrabber.h"
 #include "gstbdautil.h"
 
@@ -72,16 +70,6 @@ enum
 #define DEFAULT_MODULATION BDA_MOD_16QAM
 #define DEFAULT_TRANSMISSION_MODE BDA_XMIT_MODE_8K
 #define DEFAULT_HIERARCHY BDA_HALPHA_NOT_SET
-
-/* Define smart pointers for BDA COM interface types.
-   Unlike CComPtr, these don't require ATL. */
-_COM_SMARTPTR_TYPEDEF (ICreateDevEnum, __uuidof (ICreateDevEnum));
-_COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
-_COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
-_COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
-_COM_SMARTPTR_TYPEDEF (ISampleGrabber, __uuidof (ISampleGrabber));
-_COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
-_COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
 
 static void gst_bdasrc_output_frontend_stats (GstBdaSrc * src);
 
@@ -325,6 +313,7 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 static void
 gst_bdasrc_init (GstBdaSrc * self)
 {
+  CoInitializeEx (NULL, COINIT_MULTITHREADED);
   GST_INFO_OBJECT (self, "gst_bdasrc_init");
 
   gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
@@ -343,6 +332,7 @@ gst_bdasrc_init (GstBdaSrc * self)
   self->tuner = NULL;
   self->filter_graph = NULL;
   self->media_control = NULL;
+  self->ts_grabber = new GstBdaGrabber (self);
 
   g_mutex_init (&self->lock);
   g_cond_init (&self->cond);
@@ -350,9 +340,6 @@ gst_bdasrc_init (GstBdaSrc * self)
   g_queue_init (&self->ts_samples);
 
   self->sample_received = gst_bdasrc_sample_received;
-
-  // FIXME
-  CoInitializeEx (NULL, COINIT_MULTITHREADED);
 }
 
 static void
@@ -449,6 +436,8 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
 static gboolean
 gst_bdasrc_create_graph (GstBdaSrc * src)
 {
+  CoInitializeEx (NULL, COINIT_MULTITHREADED);
+
   HRESULT res = CoCreateInstance (CLSID_FilterGraph, NULL, CLSCTX_ALL,
       __uuidof (IGraphBuilder), (LPVOID *) & src->filter_graph);
   if (FAILED (res)) {
@@ -570,6 +559,10 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     GST_ERROR_OBJECT (src, "Unable to get DVB tune request interface");
     return FALSE;
   }
+
+  dvb_tune_request->put_ONID (-1);
+  dvb_tune_request->put_SID (-1);
+  dvb_tune_request->put_TSID (-1);
 
   res = dvb_tune_request->put_Locator (locator);
   if (FAILED (res)) {
@@ -739,17 +732,19 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
 }
 
 static gboolean
-gst_bdasrc_start (GstBaseSrc * bsrc)
+gst_bdasrc_start (GstBaseSrc * base_src)
 {
-  GstBdaSrc *src = GST_BDASRC (bsrc);
+  CoInitializeEx (NULL, COINIT_MULTITHREADED);
 
-  HRESULT hr = src->media_control->Run ();
-  if (SUCCEEDED (hr)) {
-    return TRUE;
-  } else {
-    src->media_control->Stop ();
+  GstBdaSrc *bda_src = GST_BDASRC (base_src);
+
+  GST_INFO_OBJECT (bda_src, "gst_bdasrc_start");
+
+  if (!gst_bdasrc_tune (bda_src)) {
     return FALSE;
   }
+
+  return TRUE;
 }
 
 static gboolean
@@ -757,9 +752,14 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
 {
   GstBdaSrc *src = GST_BDASRC (bsrc);
 
-  src->media_control->Pause ();
-  src->media_control->Stop ();
-
+  if (src->media_control) {
+    src->media_control->Pause ();
+    src->media_control->Stop ();
+  }
+  if (src->ts_grabber) {
+    delete src->ts_grabber;
+    src->ts_grabber = NULL;
+  }
   if (src->tuner) {
     src->tuner->Release ();
     src->tuner = NULL;
@@ -816,9 +816,48 @@ gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size)
 }
 
 static gboolean
-gst_bdasrc_tune (GstBdaSrc * object)
+gst_bdasrc_tune (GstBdaSrc * bda_src)
 {
-  /* FIXME */
+  HRESULT res = bda_src->media_control->Run ();
+  if (FAILED (res)) {
+    bda_src->media_control->Stop ();
+    return FALSE;
+  }
+
+  IBDA_TopologyPtr bda_topology;
+  res = bda_src->tuner->QueryInterface (&bda_topology);
+  if (FAILED (res)) {
+    bda_src->media_control->Stop ();
+    return FALSE;
+  }
+
+  ULONG node_type_count;
+  ULONG node_types[32];
+  res =
+      bda_topology->GetNodeTypes (&node_type_count, sizeof (node_types),
+      node_types);
+  if (FAILED (res)) {
+    bda_src->media_control->Stop ();
+    return FALSE;
+  }
+
+  IBDA_SignalStatisticsPtr signal_stats;
+  for (ULONG i = 0; i < node_type_count; i++) {
+    IUnknown *node = NULL;
+    res = bda_topology->GetControlNode (0, 1, node_types[i], &node);
+    if (res == S_OK) {
+      res = node->QueryInterface (&signal_stats);
+      node->Release ();
+
+      BOOLEAN locked;
+      if (SUCCEEDED (signal_stats->get_SignalLocked (&locked))) {
+        return locked;
+      }
+
+      break;
+    }
+  }
+
   return TRUE;
 }
 
