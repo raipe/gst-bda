@@ -11,5 +11,5 @@ Currently only DVB-C (cable) input devices are supported.
 
 ## Sample pipelines
 
-DVB-C:
+Plays a random program from a DVB-C input:
 gst-launch-1.0 bdasrc device=0 frequency=154000 symbol-rate=6900 modulation="QAM 128" ! decodebin name=dbin ! queue ! autovideosink dbin. ! queue ! audioconvert ! autoaudiosink
