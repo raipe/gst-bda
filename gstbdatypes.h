@@ -27,11 +27,12 @@
 #include <strmif.h>
 
 /* Supported BDA input device types. */
-/* TODO: DVB-T, DVB-S, ATSC */
+/* TODO: ATSC */
 typedef enum
 {
   GST_BDA_UNKNOWN,
   GST_BDA_DVB_C,
+  GST_BDA_DVB_S,
   GST_BDA_DVB_T
 } GstBdaInputType;
 
@@ -42,6 +43,7 @@ _COM_SMARTPTR_TYPEDEF (IBDA_SignalStatistics, __uuidof (IBDA_SignalStatistics));
 _COM_SMARTPTR_TYPEDEF (IBDA_Topology, __uuidof (IBDA_Topology));
 _COM_SMARTPTR_TYPEDEF (ICreateDevEnum, __uuidof (ICreateDevEnum));
 _COM_SMARTPTR_TYPEDEF (IDVBCLocator, __uuidof (IDVBCLocator));
+_COM_SMARTPTR_TYPEDEF (IDVBSLocator, __uuidof (IDVBSLocator));
 _COM_SMARTPTR_TYPEDEF (IDVBTLocator, __uuidof (IDVBTLocator));
 _COM_SMARTPTR_TYPEDEF (IDVBTuneRequest, __uuidof (IDVBTuneRequest));
 _COM_SMARTPTR_TYPEDEF (IDVBTuningSpace, __uuidof (IDVBTuningSpace));
