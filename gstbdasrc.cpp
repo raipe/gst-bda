@@ -767,10 +767,6 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
     src->filter_graph->Release ();
     src->filter_graph = NULL;
   }
-  if (src->media_control) {
-    src->media_control->Release ();
-    src->media_control = NULL;
-  }
 
   return TRUE;
 }
