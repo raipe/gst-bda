@@ -56,6 +56,8 @@ G_BEGIN_DECLS
 
     int device_index;
 
+    GstBdaInputType input_type;
+
     int frequency;
     int symbol_rate;
 

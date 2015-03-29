@@ -319,6 +319,7 @@ gst_bdasrc_init (GstBdaSrc * self)
   gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
 
   self->device_index = DEFAULT_DEVICE_INDEX;
+  self->input_type = GST_BDA_UNKNOWN;
   self->frequency = 0;
   self->symbol_rate = DEFAULT_SYMBOL_RATE;
   self->bandwidth = DEFAULT_BANDWIDTH;
@@ -497,15 +498,15 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  GstBdaInputType type = gst_bdasrc_get_input_type (src);
-  if (type == GST_BDA_UNKNOWN) {
+  src->input_type = gst_bdasrc_get_input_type (src);
+  if (src->input_type == GST_BDA_UNKNOWN) {
     GST_ERROR_OBJECT (src, "Can't determine device type for BDA tuner '%s'",
         tuner_name.c_str ());
     return FALSE;
   }
 
   IDVBTuningSpacePtr tuning_space;
-  if (!gst_bdasrc_create_tuning_space (src, type, tuning_space)) {
+  if (!gst_bdasrc_create_tuning_space(src, tuning_space)) {
     GST_ERROR_OBJECT (src, "Unable to create tuning space");
     return FALSE;
   }
@@ -525,8 +526,15 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   locator->put_OuterFEC (BDA_FEC_METHOD_NOT_SET);
   locator->put_OuterFECRate (BDA_BCC_RATE_NOT_SET);
 
-  /* FIXME: Hard coded to DVB-C */
-  CLSID network_type = CLSID_DVBCNetworkProvider;
+  CLSID network_type;
+  switch (src->input_type) {
+    case GST_BDA_DVB_C:
+      network_type = CLSID_DVBCNetworkProvider;
+      break;
+    default:
+      return FALSE;
+  }
+
   IBaseFilterPtr network_provider;
 
   res = network_provider.CreateInstance (network_type);

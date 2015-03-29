@@ -131,7 +131,7 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
 }
 
 BOOL
-gst_bdasrc_create_tuning_space (GstBdaSrc * src, GstBdaInputType type,
+gst_bdasrc_create_tuning_space (GstBdaSrc * src,
     IDVBTuningSpacePtr & tuning_space)
 {
   HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
@@ -141,7 +141,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, GstBdaInputType type,
     return FALSE;
   }
 
-  switch (type) {
+  switch (src->input_type) {
     case GST_BDA_DVB_C:
       tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
       tuning_space->put_SystemType (DVB_Cable);
