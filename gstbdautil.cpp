@@ -133,6 +133,9 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
     case GST_BDA_DVB_C:
       network_type = CLSID_DVBCNetworkProvider;
       break;
+    case GST_BDA_DVB_S:
+      network_type = CLSID_DVBSNetworkProvider;
+      break;
     case GST_BDA_DVB_T:
       network_type = CLSID_DVBTNetworkProvider;
       break;
@@ -186,6 +189,16 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
       tuning_space->put_SystemType (DVB_Terrestrial);
     }
 
+    return TRUE;
+  } else if (src->input_type == GST_BDA_DVB_S) {
+    HRESULT res = tuning_space.CreateInstance (__uuidof (DVBSTuningSpace));
+    if (FAILED (res)) {
+      GST_ERROR_OBJECT (src, "Error creating DVB-S tuning space: %s (0x%x)",
+          bda_err_to_str (res).c_str (), res);
+      return FALSE;
+    }
+    tuning_space->put__NetworkType (DVB_SATELLITE_TV_NETWORK_TYPE);
+    tuning_space->put_SystemType (DVB_Satellite);
     return TRUE;
   }
 
