@@ -275,7 +275,6 @@ static void
 gst_bdasrc_init (GstBdaSrc * self)
 {
   CoInitializeEx (NULL, COINIT_MULTITHREADED);
-  GST_INFO_OBJECT (self, "gst_bdasrc_init");
 
   gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
 
@@ -672,8 +671,6 @@ gst_bdasrc_start (GstBaseSrc * base_src)
   CoInitializeEx (NULL, COINIT_MULTITHREADED);
 
   GstBdaSrc *bda_src = GST_BDASRC (base_src);
-
-  GST_INFO_OBJECT (bda_src, "gst_bdasrc_start");
 
   if (!gst_bdasrc_tune (bda_src)) {
     return FALSE;
