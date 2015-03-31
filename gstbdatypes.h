@@ -20,11 +20,14 @@
 #ifndef __GST_BDATYPES_H__
 #define __GST_BDATYPES_H__
 
+#include <gst/gst.h>
 #include <comdef.h>
 // To obtain Qedit.h, download the Microsoft Windows SDK Update for Windows Vista and .NET Framework 3.0:
 // http://go.microsoft.com/fwlink/p/?linkid=129787
 #include <qedit.h>
 #include <strmif.h>
+
+GST_DEBUG_CATEGORY_EXTERN (gstbdasrc_debug);
 
 /* Supported BDA input device types. */
 typedef enum

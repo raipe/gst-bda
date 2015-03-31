@@ -41,7 +41,7 @@
 #include "gstbdagrabber.h"
 #include "gstbdautil.h"
 
-GST_DEBUG_CATEGORY_STATIC (gstbdasrc_debug);
+GST_DEBUG_CATEGORY (gstbdasrc_debug);
 #define GST_CAT_DEFAULT (gstbdasrc_debug)
 
 /* Arguments */
