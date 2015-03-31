@@ -33,6 +33,9 @@ std::string bda_get_tuner_name (IMoniker * tuner_moniker);
 
 GstBdaInputType gst_bdasrc_get_input_type (GstBdaSrc * src);
 
+BOOL gst_bdasrc_get_network_type (GstBdaInputType input_type,
+    CLSID & network_type);
+
 BOOL gst_bdasrc_create_tuning_space (GstBdaSrc * src,
     IDVBTuningSpacePtr & tuning_space);
 

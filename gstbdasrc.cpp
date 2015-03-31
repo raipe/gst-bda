@@ -459,18 +459,9 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   }
 
   CLSID network_type;
-  switch (src->input_type) {
-    case GST_BDA_DVB_C:
-      network_type = CLSID_DVBCNetworkProvider;
-      break;
-    case GST_BDA_DVB_S:
-      network_type = CLSID_DVBSNetworkProvider;
-      break;
-    case GST_BDA_DVB_T:
-      network_type = CLSID_DVBTNetworkProvider;
-      break;
-    default:
-      return FALSE;
+  if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
+    GST_ERROR_OBJECT (src, "Can't determine network type");
+    return FALSE;
   }
 
   IBaseFilterPtr network_provider;

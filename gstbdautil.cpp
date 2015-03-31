@@ -116,8 +116,12 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
     const GUID & guid = desc[i].guidFunction;
     if (IsEqualGUID (guid, KSNODE_BDA_QAM_DEMODULATOR)) {
       return GST_BDA_DVB_C;
+    } else if (IsEqualGUID (guid, KSNODE_BDA_QPSK_DEMODULATOR)) {
+      return GST_BDA_DVB_S;
     } else if (IsEqualGUID (guid, KSNODE_BDA_COFDM_DEMODULATOR)) {
       return GST_BDA_DVB_T;
+    } else if (IsEqualGUID (guid, KSNODE_BDA_8VSB_DEMODULATOR)) {
+      return GST_BDA_ATSC;
     }
   }
 
@@ -125,24 +129,34 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
 }
 
 BOOL
+gst_bdasrc_get_network_type (GstBdaInputType input_type, CLSID & network_type)
+{
+  switch (input_type) {
+    case GST_BDA_ATSC:
+      network_type = CLSID_ATSCNetworkProvider;
+      return TRUE;
+    case GST_BDA_DVB_C:
+      network_type = CLSID_DVBCNetworkProvider;
+      return TRUE;
+    case GST_BDA_DVB_S:
+      network_type = CLSID_DVBSNetworkProvider;
+      return TRUE;
+    case GST_BDA_DVB_T:
+      network_type = CLSID_DVBTNetworkProvider;
+      return TRUE;
+    default:
+      return FALSE;
+  }
+}
+
+BOOL
 gst_bdasrc_create_tuning_space (GstBdaSrc * src,
     IDVBTuningSpacePtr & tuning_space)
 {
   CLSID network_type;
-  switch (src->input_type) {
-    case GST_BDA_DVB_C:
-      network_type = CLSID_DVBCNetworkProvider;
-      break;
-    case GST_BDA_DVB_S:
-      network_type = CLSID_DVBSNetworkProvider;
-      break;
-    case GST_BDA_DVB_T:
-      network_type = CLSID_DVBTNetworkProvider;
-      break;
-    default:
-      return FALSE;
+  if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
+    return FALSE;
   }
-
   // First look for an existing tuning space that matches network type.
   ITuningSpaceContainerPtr tuning_spaces;
   HRESULT res = tuning_spaces.CreateInstance (__uuidof (SystemTuningSpaces));

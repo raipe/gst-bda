@@ -27,10 +27,10 @@
 #include <strmif.h>
 
 /* Supported BDA input device types. */
-/* TODO: ATSC */
 typedef enum
 {
   GST_BDA_UNKNOWN,
+  GST_BDA_ATSC,
   GST_BDA_DVB_C,
   GST_BDA_DVB_S,
   GST_BDA_DVB_T
@@ -38,6 +38,8 @@ typedef enum
 
 /* Define smart pointers for BDA COM interface types.
    Unlike CComPtr, these don't require ATL. */
+_COM_SMARTPTR_TYPEDEF (IATSCLocator, __uuidof (IATSCLocator));
+_COM_SMARTPTR_TYPEDEF (IATSCTuningSpace, __uuidof (IATSCTuningSpace));
 _COM_SMARTPTR_TYPEDEF (IBaseFilter, __uuidof (IBaseFilter));
 _COM_SMARTPTR_TYPEDEF (IBDA_SignalStatistics, __uuidof (IBDA_SignalStatistics));
 _COM_SMARTPTR_TYPEDEF (IBDA_Topology, __uuidof (IBDA_Topology));
