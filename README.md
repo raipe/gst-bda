@@ -10,6 +10,7 @@ untested.
 
 ## Build requirements
 - [Visual Studio 2013 or later](https://www.visualstudio.com/)
+- [qedit.h](http://blogs.msdn.com/b/karinm/archive/2010/01/15/where-is-qedit-h.aspx)
 - [GStreamer 1.0 SDK](http://gstreamer.freedesktop.org/data/pkg/windows/)
 
 ## Sample pipelines
