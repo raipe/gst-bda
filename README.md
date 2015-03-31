@@ -1,6 +1,6 @@
-## gst-bda
-Windows BDA capture plugin for GStreamer. It can be used capture MPEG-2
-transport stream from BDA devices
+## GStreamer BDA capture plugin
+This is a Windows BDA capture plugin for GStreamer. It can be used capture
+MPEG-2 transport stream from BDA devices.
 
 ## Supported input devices
 
@@ -14,4 +14,5 @@ untested.
 ## Sample pipelines
 
 Plays a random program from a DVB-C input:
+
 gst-launch-1.0 bdasrc device=0 frequency=154000 symbol-rate=6900 modulation="QAM 128" ! decodebin name=dbin ! queue ! autovideosink dbin. ! queue ! audioconvert ! autoaudiosink
