@@ -1,5 +1,6 @@
 ## gst-bda
-Windows BDA capture plugin for GStreamer.
+Windows BDA capture plugin for GStreamer. It can be used capture MPEG-2
+transport stream from BDA devices
 
 ## Supported input devices
 
