@@ -381,7 +381,7 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
   }
 }
 
-/* Creates the filter graph. */
+/* Creates the DirectShow filter graph. */
 static gboolean
 gst_bdasrc_create_graph (GstBdaSrc * src)
 {
