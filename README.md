@@ -1,6 +1,7 @@
 ## GStreamer BDA capture plugin
-This is a Windows BDA capture plugin for GStreamer. It can be used capture
-MPEG-2 transport stream from BDA devices.
+This is a Windows [BDA](http://en.wikipedia.org/wiki/Broadcast_Driver_Architecture)
+capture plugin for GStreamer. It can be used capture MPEG-2 transport stream
+from BDA devices.
 
 ## Supported input devices
 
