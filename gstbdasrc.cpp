@@ -57,7 +57,7 @@ enum
   ARG_BDASRC_GUARD_INTERVAL,
   ARG_BDASRC_MODULATION,
   ARG_BDASRC_TRANSMISSION_MODE,
-  ARG_BDASRC_HIERARCHY_INF
+  ARG_BDASRC_HIERARCHY
 };
 
 #define DEFAULT_DEVICE_INDEX 0
@@ -264,7 +264,7 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           "Transmission Mode (DVB-T)", GST_TYPE_BDASRC_TRANSMISSION_MODE,
           DEFAULT_TRANSMISSION_MODE, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_HIERARCHY_INF,
+  g_object_class_install_property (gobject_class, ARG_BDASRC_HIERARCHY,
       g_param_spec_enum ("hierarchy", "hierarchy",
           "Hierarchy Information (DVB-T)",
           GST_TYPE_BDASRC_HIERARCHY, DEFAULT_HIERARCHY,
@@ -334,7 +334,7 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
     case ARG_BDASRC_TRANSMISSION_MODE:
       object->transmission_mode = (TransmissionMode) g_value_get_enum (value);
       break;
-    case ARG_BDASRC_HIERARCHY_INF:
+    case ARG_BDASRC_HIERARCHY:
       object->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
       break;
     default:
@@ -373,7 +373,7 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
     case ARG_BDASRC_TRANSMISSION_MODE:
       g_value_set_enum (value, object->transmission_mode);
       break;
-    case ARG_BDASRC_HIERARCHY_INF:
+    case ARG_BDASRC_HIERARCHY:
       g_value_set_enum (value, object->hierarchy_information);
       break;
     default:
