@@ -100,7 +100,7 @@ GstBdaInputType
 gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
 {
   IBDA_TopologyPtr bda_topology;
-  HRESULT res = bda_src->tuner->QueryInterface (&bda_topology);
+  HRESULT res = bda_src->network_tuner->QueryInterface (&bda_topology);
   if (FAILED (res)) {
     return GST_BDA_UNKNOWN;
   }
@@ -475,9 +475,11 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
 
   res =
       gst_bdasrc_load_filter (bda_src, sys_dev_enum,
-      KSCATEGORY_BDA_RECEIVER_COMPONENT, bda_src->tuner, &bda_src->capture);
+      KSCATEGORY_BDA_RECEIVER_COMPONENT, bda_src->network_tuner,
+      &bda_src->receiver);
   if (FAILED (res)) {
-    bda_src->capture = bda_src->tuner;
+    // There is no separate receiver filter, use network tuner instead.
+    bda_src->receiver = bda_src->network_tuner;
   }
 
   AM_MEDIA_TYPE media_type;
@@ -488,7 +490,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
     GST_ERROR_OBJECT (bda_src, "Unable to set TS grabber media type");
     return FALSE;
   }
-  res = gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture);
+  res = gst_bdasrc_connect_filters (bda_src, bda_src->receiver, ts_capture);
   if (FAILED (res)) {
     media_type.subtype = KSDATAFORMAT_SUBTYPE_BDA_MPEG2_TRANSPORT;
     if (FAILED (sample_grabber->SetMediaType (&media_type))) {
@@ -496,7 +498,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
       return FALSE;
     }
 
-    res = gst_bdasrc_connect_filters (bda_src, bda_src->capture, ts_capture);
+    res = gst_bdasrc_connect_filters (bda_src, bda_src->receiver, ts_capture);
     if (FAILED (res)) {
       GST_ERROR_OBJECT (bda_src, "Unable to connect TS capture: %s"
           " (0x%x)", bda_err_to_str (res).c_str (), res);

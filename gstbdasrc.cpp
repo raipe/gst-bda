@@ -289,7 +289,8 @@ gst_bdasrc_init (GstBdaSrc * self)
   self->transmission_mode = DEFAULT_TRANSMISSION_MODE;
   self->hierarchy_information = DEFAULT_HIERARCHY;
 
-  self->tuner = NULL;
+  self->network_tuner = NULL;
+  self->receiver = NULL;
   self->filter_graph = NULL;
   self->media_control = NULL;
   self->ts_grabber = new GstBdaGrabber (self);
@@ -439,7 +440,7 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   GST_INFO_OBJECT (src, "Using BDA tuner device '%s'", tuner_name.c_str ());
 
   res = tuner_moniker->BindToObject (NULL, NULL, IID_IBaseFilter,
-      (void **) &src->tuner);
+      (void **) &src->network_tuner);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to bind to BDA tuner");
     return FALSE;
@@ -517,13 +518,13 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  res = src->filter_graph->AddFilter (src->tuner, L"Tuner device");
+  res = src->filter_graph->AddFilter (src->network_tuner, L"Tuner device");
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to add tuner to filter graph");
     return FALSE;
   }
 
-  res = gst_bdasrc_connect_filters (src, network_provider, src->tuner);
+  res = gst_bdasrc_connect_filters (src, network_provider, src->network_tuner);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (src, "Unable to connect tuner: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
@@ -694,9 +695,9 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
     delete src->ts_grabber;
     src->ts_grabber = NULL;
   }
-  if (src->tuner) {
-    src->tuner->Release ();
-    src->tuner = NULL;
+  if (src->network_tuner) {
+    src->network_tuner->Release ();
+    src->network_tuner = NULL;
   }
   if (src->filter_graph) {
     src->filter_graph->Release ();
@@ -755,7 +756,7 @@ gst_bdasrc_tune (GstBdaSrc * bda_src)
   }
 
   IBDA_TopologyPtr bda_topology;
-  res = bda_src->tuner->QueryInterface (&bda_topology);
+  res = bda_src->network_tuner->QueryInterface (&bda_topology);
   if (FAILED (res)) {
     bda_src->media_control->Stop ();
     return FALSE;

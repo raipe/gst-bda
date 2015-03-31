@@ -67,8 +67,10 @@ G_BEGIN_DECLS
     TransmissionMode transmission_mode;
     HierarchyAlpha hierarchy_information;
 
-    IBaseFilter *tuner;
-    IBaseFilter *capture;
+    /* BDA network tuner filter */
+    IBaseFilter *network_tuner;
+    /* BDA receiver filter */
+    IBaseFilter *receiver;
     IGraphBuilder *filter_graph;
     IMediaControl *media_control;
 
