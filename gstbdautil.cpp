@@ -220,7 +220,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
 }
 
 BOOL
-gst_bdasrc_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
+gst_bdasrc_init_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
 {
   IDigitalLocatorPtr locator;
   switch (src->input_type) {

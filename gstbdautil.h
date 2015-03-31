@@ -65,7 +65,7 @@ BOOL gst_bdasrc_create_tuning_space (GstBdaSrc * src,
  * generic interface than IDVBTuneRequest.
  * @return TRUE if tune request was initialized successfully
  */
-BOOL gst_bdasrc_tune_request (GstBdaSrc * src,
+BOOL gst_bdasrc_init_tune_request (GstBdaSrc * src,
     IDVBTuneRequestPtr & tune_request);
 
 /**

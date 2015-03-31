@@ -500,7 +500,7 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  if (!gst_bdasrc_tune_request (src, dvb_tune_request)) {
+  if (!gst_bdasrc_init_tune_request (src, dvb_tune_request)) {
     GST_ERROR_OBJECT (src, "Unable to initialise tune request");
     return FALSE;
   }
