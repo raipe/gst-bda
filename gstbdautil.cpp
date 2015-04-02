@@ -42,7 +42,7 @@ trim_string (char *str)
   }
 
   /* Trim trailing whitespace. */
-  for (int i = strlen (str) - 1; i >= 0; i--) {
+  for (size_t i = strlen (str) - 1; i >= 0; i--) {
     if (!isspace (str[i])) {
       break;
     }
