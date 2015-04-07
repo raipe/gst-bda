@@ -160,7 +160,8 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
   if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
     return FALSE;
   }
-  // First look for an existing tuning space that matches network type.
+
+  // First we look for an existing tuning space that matches network type.
   ITuningSpaceContainerPtr tuning_spaces;
   HRESULT res = tuning_spaces.CreateInstance (__uuidof (SystemTuningSpaces));
   if (FAILED (res)) {
@@ -190,7 +191,19 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
   }
 
   // No existing tuning space found, create a new one.
-  if (src->input_type == GST_BDA_DVB_C || src->input_type == GST_BDA_DVB_T) {
+  if (src->input_type == GST_BDA_ATSC) {
+    HRESULT res = tuning_space.CreateInstance (__uuidof (ATSCTuningSpace));
+    if (FAILED (res)) {
+      GST_ERROR_OBJECT (src, "Error creating ATSC tuning space: %s (0x%x)",
+          bda_err_to_str (res).c_str (), res);
+      return FALSE;
+    }
+
+    tuning_space->put__NetworkType (ATSC_TERRESTRIAL_TV_NETWORK_TYPE);
+
+    return TRUE;
+  } else if (src->input_type == GST_BDA_DVB_C
+      || src->input_type == GST_BDA_DVB_T) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
     if (FAILED (res)) {
       GST_ERROR_OBJECT (src, "Error creating DVB tuning space: %s (0x%x)",
@@ -223,7 +236,8 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
 }
 
 BOOL
-gst_bdasrc_init_tune_request (GstBdaSrc * src, IDVBTuneRequestPtr & tune_request)
+gst_bdasrc_init_tune_request (GstBdaSrc * src,
+    IDVBTuneRequestPtr & tune_request)
 {
   IDigitalLocatorPtr locator;
   switch (src->input_type) {
