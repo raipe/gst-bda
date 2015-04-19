@@ -32,67 +32,60 @@ class GstBdaGrabber;
 
 G_BEGIN_DECLS
 
-#define GST_TYPE_BDASRC \
-  (gst_bdasrc_get_type())
-#define GST_BDASRC(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_BDASRC,GstBdaSrc))
-#define GST_BDASRC_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_BDASRC,GstBdaSrcClass))
-#define GST_IS_BDASRC(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_BDASRC))
-#define GST_IS_BDASRC_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_BDASRC))
+#define GST_TYPE_BDASRC (gst_bdasrc_get_type())
+#define GST_BDASRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_BDASRC,GstBdaSrc))
+#define GST_BDASRC_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_BDASRC,GstBdaSrcClass))
+#define GST_IS_BDASRC(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_BDASRC))
+#define GST_IS_BDASRC_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_BDASRC))
 
-  typedef struct _GstBdaSrc GstBdaSrc;
-  typedef struct _GstBdaSrcClass GstBdaSrcClass;
-  typedef struct _GstBdaSrcParam GstBdaSrcParam;
+typedef struct _GstBdaSrc GstBdaSrc;
+typedef struct _GstBdaSrcClass GstBdaSrcClass;
+typedef struct _GstBdaSrcParam GstBdaSrcParam;
 
-  struct _GstBdaSrc
-  {
-    GstPushSrc element;
-    GstPad *srcpad;
+struct _GstBdaSrc {
+  GstPushSrc element;
+  GstPad *srcpad;
 
-    gboolean need_tune;
+  gboolean need_tune;
 
-    int device_index;
+  int device_index;
 
-    GstBdaInputType input_type;
+  GstBdaInputType input_type;
 
-    int frequency;
-    int symbol_rate;
+  int frequency;
+  int symbol_rate;
 
-    int bandwidth;
-    ModulationType modulation;
-    GuardInterval guard_interval;
-    TransmissionMode transmission_mode;
-    HierarchyAlpha hierarchy_information;
+  int bandwidth;
+  ModulationType modulation;
+  GuardInterval guard_interval;
+  TransmissionMode transmission_mode;
+  HierarchyAlpha hierarchy_information;
 
-    /* BDA network tuner filter */
-    IBaseFilter *network_tuner;
-    /* BDA receiver filter */
-    IBaseFilter *receiver;
-    IGraphBuilder *filter_graph;
-    IMediaControl *media_control;
+  /* BDA network tuner filter */
+  IBaseFilter *network_tuner;
+  /* BDA receiver filter */
+  IBaseFilter *receiver;
+  IGraphBuilder *filter_graph;
+  IMediaControl *media_control;
 
-    GstBdaGrabber *ts_grabber;
+  GstBdaGrabber *ts_grabber;
 
-    GCond cond;
-    GMutex lock;
-    gboolean flushing;
-    /* Queue of MPEG-2 transport stream samples. */
-    GQueue ts_samples;
+  GCond cond;
+  GMutex lock;
+  gboolean flushing;
+  /* Queue of MPEG-2 transport stream samples. */
+  GQueue ts_samples;
 
-    /* Callback function for GstBdaGrabber. */
-    void (*sample_received) (GstBdaSrc *bda_src, gpointer data, gsize size);
-  };
+  /* Callback function for GstBdaGrabber. */
+  void (*sample_received) (GstBdaSrc *bda_src, gpointer data, gsize size);
+};
 
-  struct _GstBdaSrcClass
-  {
-    GstPushSrcClass parent_class;
-  };
+struct _GstBdaSrcClass {
+  GstPushSrcClass parent_class;
+};
 
-  GType gst_bdasrc_get_type (void);
-  gboolean gst_bdasrc_plugin_init (GstPlugin *plugin);
+GType gst_bdasrc_get_type (void);
+gboolean gst_bdasrc_plugin_init (GstPlugin *plugin);
 
 G_END_DECLS
 
