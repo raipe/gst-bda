@@ -17,4 +17,8 @@ untested.
 
 Plays a random program from a DVB-C input:
 
-gst-launch-1.0 bdasrc device=0 frequency=154000 symbol-rate=6900 modulation="QAM 128" ! decodebin name=dbin ! queue ! autovideosink dbin. ! queue ! audioconvert ! autoaudiosink
+  gst-launch-1.0 bdasrc device=0 frequency=154000 symbol-rate=6900 modulation="QAM 128" ! decodebin name=dbin ! queue ! autovideosink dbin. ! queue ! audioconvert ! autoaudiosink
+
+Plays program 49 from a DVB-C input:
+
+  gst-launch-1.0 bdasrc device=1 frequency=154000 symbol-rate=6900 modulation="QAM 128" ! tsdemux program-number=49 name=demux demux. ! "video/mpeg" ! decodebin ! queue ! autovideosink demux. ! "audio/mpeg" ! queue ! decodebin ! audioconvert ! autoaudiosink
