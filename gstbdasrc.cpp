@@ -384,8 +384,6 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
 static gboolean
 gst_bdasrc_create_graph (GstBdaSrc * src)
 {
-  CoInitializeEx (NULL, COINIT_MULTITHREADED);
-
   HRESULT res = CoCreateInstance (CLSID_FilterGraph, NULL, CLSCTX_ALL,
       __uuidof (IGraphBuilder), (LPVOID *) & src->filter_graph);
   if (FAILED (res)) {
@@ -668,8 +666,6 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
 static gboolean
 gst_bdasrc_start (GstBaseSrc * base_src)
 {
-  CoInitializeEx (NULL, COINIT_MULTITHREADED);
-
   GstBdaSrc *bda_src = GST_BDASRC (base_src);
 
   if (!gst_bdasrc_tune (bda_src)) {
