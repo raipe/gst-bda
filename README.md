@@ -5,8 +5,8 @@ from BDA devices.
 
 ## Supported input devices
 
-Only DVB-C (cable) input devices have been tested. DVB-T is supported, but
-untested.
+Only DVB-C (cable) input devices have been tested. DVB-S (satellite) and DVB-T
+(terrestrial) are supported, but untested.
 
 ## Build requirements
 - [Visual Studio 2013 or later](https://www.visualstudio.com/)
