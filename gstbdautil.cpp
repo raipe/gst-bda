@@ -307,7 +307,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
       dvb_s_locator->put_OrbitalPosition (src->orbital_position);
       dvb_s_locator->put_WestPosition (src->west_position);
       dvb_s_locator->put_SignalPolarisation (src->polarisation);
-      dvb_s_locator->put_InnerFECRate (src->fec);
+      dvb_s_locator->put_InnerFECRate (src->inner_fec_rate);
       break;
     }
     default:

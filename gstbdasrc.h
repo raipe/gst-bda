@@ -61,11 +61,11 @@ struct _GstBdaSrc {
   TransmissionMode transmission_mode;
   HierarchyAlpha hierarchy_information;
   /* DVB-S: Longitude */
-  long orbital_position;
+  int orbital_position;
   /* DVB-S: TRUE for west longitude */
   gboolean west_position;
   Polarisation polarisation;
-  BinaryConvolutionCodeRate fec;
+  BinaryConvolutionCodeRate inner_fec_rate;
 
   /* BDA network tuner filter */
   IBaseFilter *network_tuner;
