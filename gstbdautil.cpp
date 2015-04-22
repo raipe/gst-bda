@@ -301,14 +301,13 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
             " (0x%x)", bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
-      // FIXME: Add missing properties to GstBdaSrc.
       dvb_s_locator->put_CarrierFrequency (src->frequency);
       dvb_s_locator->put_SymbolRate (src->symbol_rate);
       dvb_s_locator->put_Modulation (src->modulation);
-      //dvb_s_locator->put_OrbitalPosition(src->orbital_position);
-      //dvb_s_locator->put_WestPosition(src->west_position);
-      //dvb_s_locator->put_SignalPolarisation(src->polarisation);
-      //dvb_s_locator->put_InnerFECRate(src->fec);
+      dvb_s_locator->put_OrbitalPosition (src->orbital_position);
+      dvb_s_locator->put_WestPosition (src->west_position);
+      dvb_s_locator->put_SignalPolarisation (src->polarisation);
+      dvb_s_locator->put_InnerFECRate (src->fec);
       break;
     }
     default:

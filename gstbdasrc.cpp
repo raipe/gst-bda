@@ -68,6 +68,10 @@ enum
 #define DEFAULT_MODULATION BDA_MOD_16QAM
 #define DEFAULT_TRANSMISSION_MODE BDA_XMIT_MODE_8K
 #define DEFAULT_HIERARCHY BDA_HALPHA_NOT_SET
+#define DEFAULT_ORBITAL_POSITION 0
+#define DEFAULT_WEST_POSITION FALSE
+#define DEFAULT_POLARISATION BDA_POLARISATION_NOT_SET
+#define DEFAULT_FEC BDA_BCC_RATE_NOT_SET
 
 static void gst_bdasrc_output_frontend_stats (GstBdaSrc * src);
 
@@ -287,6 +291,10 @@ gst_bdasrc_init (GstBdaSrc * self)
   self->modulation = DEFAULT_MODULATION;
   self->transmission_mode = DEFAULT_TRANSMISSION_MODE;
   self->hierarchy_information = DEFAULT_HIERARCHY;
+  self->orbital_position = DEFAULT_ORBITAL_POSITION;
+  self->west_position = DEFAULT_WEST_POSITION;
+  self->polarisation = DEFAULT_POLARISATION;
+  self->fec = DEFAULT_FEC;
 
   self->network_tuner = NULL;
   self->receiver = NULL;

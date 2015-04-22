@@ -60,6 +60,12 @@ struct _GstBdaSrc {
   GuardInterval guard_interval;
   TransmissionMode transmission_mode;
   HierarchyAlpha hierarchy_information;
+  /* DVB-S: Longitude */
+  long orbital_position;
+  /* DVB-S: TRUE for west longitude */
+  gboolean west_position;
+  Polarisation polarisation;
+  BinaryConvolutionCodeRate fec;
 
   /* BDA network tuner filter */
   IBaseFilter *network_tuner;
