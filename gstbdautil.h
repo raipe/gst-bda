@@ -53,12 +53,11 @@ BOOL gst_bdasrc_get_network_type (GstBdaInputType input_type,
 /**
  * Returns a BDA tuning space according to input device type. If a matching
  * tuning space is found in system tuning spaces, it is returned. Otherwise
- * a new one is created. FIXME: Use a more generic interface than
- * IDVBTuningSpace.
+ * a new one is created.
  * @return TRUE if tuning space was found or created successfully
  */
 BOOL gst_bdasrc_create_tuning_space (GstBdaSrc * src,
-    IDVBTuningSpacePtr & tuning_space);
+    ITuningSpacePtr & tuning_space);
 
 /**
  * Initializes a tune request according to input device type. FIXME: Use a more

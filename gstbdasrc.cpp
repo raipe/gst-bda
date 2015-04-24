@@ -574,7 +574,7 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
     return FALSE;
   }
 
-  IDVBTuningSpacePtr tuning_space;
+  ITuningSpacePtr tuning_space;
   if (!gst_bdasrc_create_tuning_space (src, tuning_space)) {
     GST_ERROR_OBJECT (src, "Unable to create tuning space");
     return FALSE;

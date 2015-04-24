@@ -153,8 +153,7 @@ gst_bdasrc_get_network_type (GstBdaInputType input_type, CLSID & network_type)
 }
 
 BOOL
-gst_bdasrc_create_tuning_space (GstBdaSrc * src,
-    IDVBTuningSpacePtr & tuning_space)
+gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
 {
   CLSID network_type;
   if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
@@ -211,12 +210,20 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
       return FALSE;
     }
 
+    IDVBTuningSpacePtr dvb_tuning_space;
+    res = tuning_space->QueryInterface (&dvb_tuning_space);
+    if (FAILED (res)) {
+      GST_ERROR_OBJECT (src, "Unable to get DVB tuning space interface: %s"
+          " (0x%x)", bda_err_to_str (res).c_str (), res);
+      return FALSE;
+    }
+
     if (src->input_type == GST_BDA_DVB_C) {
-      tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
-      tuning_space->put_SystemType (DVB_Cable);
+      dvb_tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
+      dvb_tuning_space->put_SystemType (DVB_Cable);
     } else {
-      tuning_space->put__NetworkType (DVB_TERRESTRIAL_TV_NETWORK_TYPE);
-      tuning_space->put_SystemType (DVB_Terrestrial);
+      dvb_tuning_space->put__NetworkType (DVB_TERRESTRIAL_TV_NETWORK_TYPE);
+      dvb_tuning_space->put_SystemType (DVB_Terrestrial);
     }
 
     return TRUE;
@@ -227,8 +234,17 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src,
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
-    tuning_space->put__NetworkType (DVB_SATELLITE_TV_NETWORK_TYPE);
-    tuning_space->put_SystemType (DVB_Satellite);
+
+    IDVBSTuningSpacePtr dvbs_tuning_space;
+    res = tuning_space->QueryInterface (&dvbs_tuning_space);
+    if (FAILED (res)) {
+      GST_ERROR_OBJECT (src, "Unable to get DVB-S tuning space interface: %s"
+          " (0x%x)", bda_err_to_str (res).c_str (), res);
+      return FALSE;
+    }
+
+    dvbs_tuning_space->put__NetworkType (DVB_SATELLITE_TV_NETWORK_TYPE);
+    dvbs_tuning_space->put_SystemType (DVB_Satellite);
     return TRUE;
   }
 
