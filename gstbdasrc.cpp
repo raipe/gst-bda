@@ -399,54 +399,54 @@ static void
 gst_bdasrc_set_property (GObject * _object, guint prop_id,
     const GValue * value, GParamSpec * pspec)
 {
-  GstBdaSrc *object;
+  GstBdaSrc *self;
 
   g_return_if_fail (GST_IS_BDASRC (_object));
-  object = GST_BDASRC (_object);
+  self = GST_BDASRC (_object);
 
   switch (prop_id) {
     case PROP_BUFFER_SIZE:
-      object->buffer_size = g_value_get_uint (value);
+      self->buffer_size = g_value_get_uint (value);
       break;
     case PROP_DEVICE_INDEX:
-      object->device_index = g_value_get_uint (value);
+      self->device_index = g_value_get_uint (value);
       break;
     case PROP_FREQUENCY:
-      object->frequency = g_value_get_uint (value);
+      self->frequency = g_value_get_uint (value);
       break;
     case PROP_SYMBOL_RATE:
-      object->symbol_rate = g_value_get_uint (value);
+      self->symbol_rate = g_value_get_uint (value);
       break;
     case PROP_BANDWIDTH:
-      object->bandwidth = g_value_get_int (value);
+      self->bandwidth = g_value_get_int (value);
       break;
     case PROP_GUARD_INTERVAL:
-      object->guard_interval = (GuardInterval) g_value_get_enum (value);
+      self->guard_interval = (GuardInterval) g_value_get_enum (value);
       break;
     case PROP_MODULATION:
-      object->modulation = (ModulationType) g_value_get_enum (value);
+      self->modulation = (ModulationType) g_value_get_enum (value);
       break;
     case PROP_TRANSMISSION_MODE:
-      object->transmission_mode = (TransmissionMode) g_value_get_enum (value);
+      self->transmission_mode = (TransmissionMode) g_value_get_enum (value);
       break;
     case PROP_HIERARCHY:
-      object->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
+      self->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
       break;
     case PROP_ORBITAL_POSITION:
-      object->orbital_position = g_value_get_int (value);
+      self->orbital_position = g_value_get_int (value);
       break;
     case PROP_WEST_POSITION:
-      object->west_position = g_value_get_boolean (value);
+      self->west_position = g_value_get_boolean (value);
       break;
     case PROP_POLARISATION:
-      object->polarisation = (Polarisation) g_value_get_enum (value);
+      self->polarisation = (Polarisation) g_value_get_enum (value);
       break;
     case PROP_INNER_FEC_RATE:
-      object->inner_fec_rate =
+      self->inner_fec_rate =
           (BinaryConvolutionCodeRate) g_value_get_enum (value);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
   }
 }
 
@@ -454,53 +454,53 @@ static void
 gst_bdasrc_get_property (GObject * _object, guint prop_id,
     GValue * value, GParamSpec * pspec)
 {
-  GstBdaSrc *object;
+  GstBdaSrc *self;
 
   g_return_if_fail (GST_IS_BDASRC (_object));
-  object = GST_BDASRC (_object);
+  self = GST_BDASRC (_object);
 
   switch (prop_id) {
     case PROP_BUFFER_SIZE:
-      g_value_set_uint (value, object->buffer_size);
+      g_value_set_uint (value, self->buffer_size);
       break;
     case PROP_DEVICE_INDEX:
-      g_value_set_uint (value, object->device_index);
+      g_value_set_uint (value, self->device_index);
       break;
     case PROP_FREQUENCY:
-      g_value_set_uint (value, object->frequency);
+      g_value_set_uint (value, self->frequency);
       break;
     case PROP_SYMBOL_RATE:
-      g_value_set_uint (value, object->symbol_rate);
+      g_value_set_uint (value, self->symbol_rate);
       break;
     case PROP_BANDWIDTH:
-      g_value_set_int (value, object->bandwidth);
+      g_value_set_int (value, self->bandwidth);
       break;
     case PROP_GUARD_INTERVAL:
-      g_value_set_enum (value, object->guard_interval);
+      g_value_set_enum (value, self->guard_interval);
       break;
     case PROP_MODULATION:
-      g_value_set_enum (value, object->modulation);
+      g_value_set_enum (value, self->modulation);
       break;
     case PROP_TRANSMISSION_MODE:
-      g_value_set_enum (value, object->transmission_mode);
+      g_value_set_enum (value, self->transmission_mode);
       break;
     case PROP_HIERARCHY:
-      g_value_set_enum (value, object->hierarchy_information);
+      g_value_set_enum (value, self->hierarchy_information);
       break;
     case PROP_ORBITAL_POSITION:
-      g_value_set_int (value, object->orbital_position);
+      g_value_set_int (value, self->orbital_position);
       break;
     case PROP_WEST_POSITION:
-      g_value_set_boolean (value, object->west_position);
+      g_value_set_boolean (value, self->west_position);
       break;
     case PROP_POLARISATION:
-      g_value_set_enum (value, object->polarisation);
+      g_value_set_enum (value, self->polarisation);
       break;
     case PROP_INNER_FEC_RATE:
-      g_value_set_enum (value, object->inner_fec_rate);
+      g_value_set_enum (value, self->inner_fec_rate);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
   }
 }
 
@@ -693,12 +693,12 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 static void
 gst_bdasrc_finalize (GObject * object)
 {
-  GstBdaSrc *src;
+  GstBdaSrc *self;
 
   GST_DEBUG_OBJECT (object, "gst_bdasrc_finalize");
 
   g_return_if_fail (GST_IS_BDASRC (object));
-  src = GST_BDASRC (object);
+  self = GST_BDASRC (object);
 
   if (G_OBJECT_CLASS (parent_class)->finalize)
     G_OBJECT_CLASS (parent_class)->finalize (object);
