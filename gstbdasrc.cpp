@@ -166,44 +166,46 @@ gst_bdasrc_hierarchy_get_type (void)
 
 #define GST_TYPE_BDASRC_FEC_RATE (gst_bdasrc_fec_rate_get_type ())
 static GType
-gst_bdasrc_fec_rate_get_type(void)
+gst_bdasrc_fec_rate_get_type (void)
 {
   static GType bdasrc_fec_rate_type = 0;
   static GEnumValue fec_rate_types[] = {
-    { BDA_BCC_RATE_1_2, "1/2", "1/2" },
-    { BDA_BCC_RATE_2_3, "2/3", "2/3" },
-    { BDA_BCC_RATE_3_4, "3/4", "3/4" },
-    { BDA_BCC_RATE_4_5, "4/5", "4/5" },
-    { BDA_BCC_RATE_5_6, "5/6", "5/6" },
-    { BDA_BCC_RATE_6_7, "6/7", "6/7" },
-    { BDA_BCC_RATE_7_8, "7/8", "7/8" },
-    { BDA_BCC_RATE_8_9, "8/9", "8/9" },
-    { BDA_BCC_RATE_NOT_SET, "NONE", "NONE" },
-    { 0, NULL, NULL },
+    {BDA_BCC_RATE_1_2, "1/2", "1/2"},
+    {BDA_BCC_RATE_2_3, "2/3", "2/3"},
+    {BDA_BCC_RATE_3_4, "3/4", "3/4"},
+    {BDA_BCC_RATE_4_5, "4/5", "4/5"},
+    {BDA_BCC_RATE_5_6, "5/6", "5/6"},
+    {BDA_BCC_RATE_6_7, "6/7", "6/7"},
+    {BDA_BCC_RATE_7_8, "7/8", "7/8"},
+    {BDA_BCC_RATE_8_9, "8/9", "8/9"},
+    {BDA_BCC_RATE_NOT_SET, "NONE", "NONE"},
+    {0, NULL, NULL},
   };
 
   if (!bdasrc_fec_rate_type) {
-    bdasrc_fec_rate_type = g_enum_register_static("GstBdaSrcFecRate", fec_rate_types);
+    bdasrc_fec_rate_type =
+        g_enum_register_static ("GstBdaSrcFecRate", fec_rate_types);
   }
   return bdasrc_fec_rate_type;
 }
 
 #define GST_TYPE_BDASRC_POLARISATION (gst_bdasrc_polarisation_get_type ())
 static GType
-gst_bdasrc_polarisation_get_type(void)
+gst_bdasrc_polarisation_get_type (void)
 {
   static GType bdasrc_polarisation_type = 0;
   static GEnumValue polarisation_types[] = {
-    { BDA_POLARISATION_LINEAR_H, "Linear horizontal", "Linear horizontal" },
-    { BDA_POLARISATION_LINEAR_V, "Linear vertical", "Linear vertical" },
-    { BDA_POLARISATION_CIRCULAR_L, "Circular left", "Circular left" },
-    { BDA_POLARISATION_CIRCULAR_R, "Circular right", "Circular right" },
-    { BDA_POLARISATION_NOT_SET, "NONE", "NONE" },
-    { 0, NULL, NULL },
+    {BDA_POLARISATION_LINEAR_H, "Linear horizontal", "Linear horizontal"},
+    {BDA_POLARISATION_LINEAR_V, "Linear vertical", "Linear vertical"},
+    {BDA_POLARISATION_CIRCULAR_L, "Circular left", "Circular left"},
+    {BDA_POLARISATION_CIRCULAR_R, "Circular right", "Circular right"},
+    {BDA_POLARISATION_NOT_SET, "NONE", "NONE"},
+    {0, NULL, NULL},
   };
 
   if (!bdasrc_polarisation_type) {
-    bdasrc_polarisation_type = g_enum_register_static("GstBdaSrcPolarisation", polarisation_types);
+    bdasrc_polarisation_type =
+        g_enum_register_static ("GstBdaSrcPolarisation", polarisation_types);
   }
   return bdasrc_polarisation_type;
 }
@@ -322,25 +324,25 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           GST_TYPE_BDASRC_HIERARCHY, DEFAULT_HIERARCHY,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property(gobject_class, ARG_BDASRC_ORBITAL_POSITION,
+  g_object_class_install_property (gobject_class, ARG_BDASRC_ORBITAL_POSITION,
       g_param_spec_int ("orbital-position", "orbital-position",
-          "Satellite's longitude in tenths of a degree (DVB-S)", 0, G_MAXINT, DEFAULT_ORBITAL_POSITION,
-          (GParamFlags) G_PARAM_READWRITE));
+          "Satellite's longitude in tenths of a degree (DVB-S)", 0, G_MAXINT,
+          DEFAULT_ORBITAL_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property(gobject_class, ARG_BDASRC_WEST_POSITION,
+  g_object_class_install_property (gobject_class, ARG_BDASRC_WEST_POSITION,
       g_param_spec_boolean ("west-position", "west-position",
           "Longitudinal position, true for west longitude (DVB-S)",
           DEFAULT_WEST_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property(gobject_class, ARG_BDASRC_POLARISATION,
-      g_param_spec_enum("polarisation", "polarisation",
-          "Polarisation (DVB-S)", GST_TYPE_BDASRC_POLARISATION, DEFAULT_POLARISATION,
-          (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class, ARG_BDASRC_POLARISATION,
+      g_param_spec_enum ("polarisation", "polarisation",
+          "Polarisation (DVB-S)", GST_TYPE_BDASRC_POLARISATION,
+          DEFAULT_POLARISATION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property(gobject_class, ARG_BDASRC_INNER_FEC_RATE,
-      g_param_spec_enum("inner-fec-rate", "inner-fec-rate",
-          "Inner FEC rate (DVB-S)", GST_TYPE_BDASRC_FEC_RATE, DEFAULT_INNER_FEC_RATE,
-          (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class, ARG_BDASRC_INNER_FEC_RATE,
+      g_param_spec_enum ("inner-fec-rate", "inner-fec-rate",
+          "Inner FEC rate (DVB-S)", GST_TYPE_BDASRC_FEC_RATE,
+          DEFAULT_INNER_FEC_RATE, (GParamFlags) G_PARAM_READWRITE));
 }
 
 static void
