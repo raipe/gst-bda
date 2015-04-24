@@ -18,6 +18,7 @@
  */
 
 #include "gstbdagrabber.h"
+#include "gstbdautil.h"
 
 GstBdaGrabber::GstBdaGrabber (GstBdaSrc * bda_src)
 :  bda_src (bda_src)
@@ -51,7 +52,8 @@ STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
   HRESULT hr = sample->GetPointer(&data);
 
   if (FAILED (hr)) {
-    GST_ERROR_OBJECT (bda_src, "Unable to create TS capture: %ld", hr);
+    GST_ERROR_OBJECT (bda_src, "Unable to get sample data: %s (0x%x)",
+        bda_err_to_str (hr).c_str(), hr);
     return S_FALSE;
   }
 
