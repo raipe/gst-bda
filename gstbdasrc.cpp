@@ -44,25 +44,24 @@
 GST_DEBUG_CATEGORY (gstbdasrc_debug);
 #define GST_CAT_DEFAULT (gstbdasrc_debug)
 
-/* Arguments */
 enum
 {
-  ARG_0,
-  ARG_BUFFER_SIZE,
-  ARG_BDASRC_DEVICE_INDEX,
-  ARG_BDASRC_FREQUENCY,
-  ARG_BDASRC_SYM_RATE,
-  ARG_BDASRC_BANDWIDTH,
-  ARG_BDASRC_CODE_RATE_HP,
-  ARG_BDASRC_CODE_RATE_LP,
-  ARG_BDASRC_GUARD_INTERVAL,
-  ARG_BDASRC_MODULATION,
-  ARG_BDASRC_TRANSMISSION_MODE,
-  ARG_BDASRC_HIERARCHY,
-  ARG_BDASRC_ORBITAL_POSITION,
-  ARG_BDASRC_WEST_POSITION,
-  ARG_BDASRC_POLARISATION,
-  ARG_BDASRC_INNER_FEC_RATE
+  PROP_0,
+  PROP_BUFFER_SIZE,
+  PROP_DEVICE_INDEX,
+  PROP_FREQUENCY,
+  PROP_SYMBOL_RATE,
+  PROP_BANDWIDTH,
+  PROP_CODE_RATE_HP,
+  PROP_CODE_RATE_LP,
+  PROP_GUARD_INTERVAL,
+  PROP_MODULATION,
+  PROP_TRANSMISSION_MODE,
+  PROP_HIERARCHY,
+  PROP_ORBITAL_POSITION,
+  PROP_WEST_POSITION,
+  PROP_POLARISATION,
+  PROP_INNER_FEC_RATE
 };
 
 #define DEFAULT_BUFFER_SIZE 50
@@ -283,71 +282,70 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 
   gstpushsrc_class->create = GST_DEBUG_FUNCPTR (gst_bdasrc_create);
 
-  g_object_class_install_property (gobject_class, ARG_BUFFER_SIZE,
+  g_object_class_install_property (gobject_class, PROP_BUFFER_SIZE,
       g_param_spec_uint ("buffer-size", "Buffer Size",
           "Size of internal buffer in number of TS samples", 1,
           G_MAXINT, DEFAULT_BUFFER_SIZE,
           (GParamFlags) (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_DEVICE_INDEX,
+  g_object_class_install_property (gobject_class, PROP_DEVICE_INDEX,
       g_param_spec_uint ("device", "Device index", "BDA device index, e.g. 0"
           " for the first device", 0, 64, DEFAULT_DEVICE_INDEX,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_FREQUENCY,
+  g_object_class_install_property (gobject_class, PROP_FREQUENCY,
       g_param_spec_uint ("frequency", "frequency", "Frequency in kHz",
           0, G_MAXUINT, DEFAULT_FREQUENCY, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_SYM_RATE,
+  g_object_class_install_property (gobject_class, PROP_SYMBOL_RATE,
       g_param_spec_uint ("symbol-rate", "symbol rate",
           "Symbol Rate in kHz (DVB-S, DVB-C)",
           0, G_MAXUINT, DEFAULT_SYMBOL_RATE, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_BANDWIDTH,
+  g_object_class_install_property (gobject_class, PROP_BANDWIDTH,
       g_param_spec_int ("bandwidth", "bandwidth",
           "Bandwidth (DVB-T)", 5, 8, DEFAULT_BANDWIDTH,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_GUARD_INTERVAL,
+  g_object_class_install_property (gobject_class, PROP_GUARD_INTERVAL,
       g_param_spec_enum ("guard-interval", "guard-interval",
           "Guard Interval (DVB-T)",
           GST_TYPE_BDASRC_GUARD_INTERVAL, DEFAULT_GUARD,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_MODULATION,
+  g_object_class_install_property (gobject_class, PROP_MODULATION,
       g_param_spec_enum ("modulation", "modulation",
           "Modulation (DVB-T and DVB-C)",
           GST_TYPE_BDASRC_MODULATION, DEFAULT_MODULATION,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class,
-      ARG_BDASRC_TRANSMISSION_MODE,
+  g_object_class_install_property (gobject_class, PROP_TRANSMISSION_MODE,
       g_param_spec_enum ("transmission-mode", "transmission-mode",
           "Transmission Mode (DVB-T)", GST_TYPE_BDASRC_TRANSMISSION_MODE,
           DEFAULT_TRANSMISSION_MODE, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_HIERARCHY,
+  g_object_class_install_property (gobject_class, PROP_HIERARCHY,
       g_param_spec_enum ("hierarchy", "hierarchy",
           "Hierarchy Information (DVB-T)",
           GST_TYPE_BDASRC_HIERARCHY, DEFAULT_HIERARCHY,
           (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_ORBITAL_POSITION,
+  g_object_class_install_property (gobject_class, PROP_ORBITAL_POSITION,
       g_param_spec_int ("orbital-position", "orbital-position",
           "Satellite's longitude in tenths of a degree (DVB-S)", 0, G_MAXINT,
           DEFAULT_ORBITAL_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_WEST_POSITION,
+  g_object_class_install_property (gobject_class, PROP_WEST_POSITION,
       g_param_spec_boolean ("west-position", "west-position",
           "Longitudinal position, true for west longitude (DVB-S)",
           DEFAULT_WEST_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_POLARISATION,
+  g_object_class_install_property (gobject_class, PROP_POLARISATION,
       g_param_spec_enum ("polarisation", "polarisation",
           "Polarisation (DVB-S)", GST_TYPE_BDASRC_POLARISATION,
           DEFAULT_POLARISATION, (GParamFlags) G_PARAM_READWRITE));
 
-  g_object_class_install_property (gobject_class, ARG_BDASRC_INNER_FEC_RATE,
+  g_object_class_install_property (gobject_class, PROP_INNER_FEC_RATE,
       g_param_spec_enum ("inner-fec-rate", "inner-fec-rate",
           "Inner FEC rate (DVB-S)", GST_TYPE_BDASRC_FEC_RATE,
           DEFAULT_INNER_FEC_RATE, (GParamFlags) G_PARAM_READWRITE));
@@ -400,31 +398,31 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
-    case ARG_BUFFER_SIZE:
+    case PROP_BUFFER_SIZE:
       object->buffer_size = g_value_get_uint (value);
       break;
-    case ARG_BDASRC_DEVICE_INDEX:
+    case PROP_DEVICE_INDEX:
       object->device_index = g_value_get_uint (value);
       break;
-    case ARG_BDASRC_FREQUENCY:
+    case PROP_FREQUENCY:
       object->frequency = g_value_get_uint (value);
       break;
-    case ARG_BDASRC_SYM_RATE:
+    case PROP_SYMBOL_RATE:
       object->symbol_rate = g_value_get_uint (value);
       break;
-    case ARG_BDASRC_BANDWIDTH:
+    case PROP_BANDWIDTH:
       object->bandwidth = g_value_get_int (value);
       break;
-    case ARG_BDASRC_GUARD_INTERVAL:
+    case PROP_GUARD_INTERVAL:
       object->guard_interval = (GuardInterval) g_value_get_enum (value);
       break;
-    case ARG_BDASRC_MODULATION:
+    case PROP_MODULATION:
       object->modulation = (ModulationType) g_value_get_enum (value);
       break;
-    case ARG_BDASRC_TRANSMISSION_MODE:
+    case PROP_TRANSMISSION_MODE:
       object->transmission_mode = (TransmissionMode) g_value_get_enum (value);
       break;
-    case ARG_BDASRC_HIERARCHY:
+    case PROP_HIERARCHY:
       object->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
       break;
     default:
@@ -442,31 +440,31 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
-    case ARG_BUFFER_SIZE:
+    case PROP_BUFFER_SIZE:
       g_value_set_uint (value, object->buffer_size);
       break;
-    case ARG_BDASRC_DEVICE_INDEX:
+    case PROP_DEVICE_INDEX:
       g_value_set_uint (value, object->device_index);
       break;
-    case ARG_BDASRC_FREQUENCY:
+    case PROP_FREQUENCY:
       g_value_set_uint (value, object->frequency);
       break;
-    case ARG_BDASRC_SYM_RATE:
+    case PROP_SYMBOL_RATE:
       g_value_set_uint (value, object->symbol_rate);
       break;
-    case ARG_BDASRC_BANDWIDTH:
+    case PROP_BANDWIDTH:
       g_value_set_int (value, object->bandwidth);
       break;
-    case ARG_BDASRC_GUARD_INTERVAL:
+    case PROP_GUARD_INTERVAL:
       g_value_set_enum (value, object->guard_interval);
       break;
-    case ARG_BDASRC_MODULATION:
+    case PROP_MODULATION:
       g_value_set_enum (value, object->modulation);
       break;
-    case ARG_BDASRC_TRANSMISSION_MODE:
+    case PROP_TRANSMISSION_MODE:
       g_value_set_enum (value, object->transmission_mode);
       break;
-    case ARG_BDASRC_HIERARCHY:
+    case PROP_HIERARCHY:
       g_value_set_enum (value, object->hierarchy_information);
       break;
     default:
