@@ -294,33 +294,33 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_FREQUENCY,
-      g_param_spec_uint ("frequency", "frequency", "Frequency in kHz",
+      g_param_spec_uint ("frequency", "Frequency", "Frequency in kHz",
           0, G_MAXUINT, DEFAULT_FREQUENCY, (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_SYMBOL_RATE,
-      g_param_spec_uint ("symbol-rate", "symbol rate",
+      g_param_spec_uint ("symbol-rate", "Symbol rate",
           "Symbol Rate in kHz (DVB-S, DVB-C)",
           0, G_MAXUINT, DEFAULT_SYMBOL_RATE, (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_BANDWIDTH,
-      g_param_spec_int ("bandwidth", "bandwidth",
+      g_param_spec_int ("bandwidth", "Bandwidth",
           "Bandwidth (DVB-T)", 5, 8, DEFAULT_BANDWIDTH,
           (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_GUARD_INTERVAL,
-      g_param_spec_enum ("guard-interval", "guard-interval",
+      g_param_spec_enum ("guard-interval", "Guard interval",
           "Guard Interval (DVB-T)",
           GST_TYPE_BDASRC_GUARD_INTERVAL, DEFAULT_GUARD,
           (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_MODULATION,
-      g_param_spec_enum ("modulation", "modulation",
+      g_param_spec_enum ("modulation", "Modulation",
           "Modulation (DVB-T and DVB-C)",
           GST_TYPE_BDASRC_MODULATION, DEFAULT_MODULATION,
           (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_TRANSMISSION_MODE,
-      g_param_spec_enum ("transmission-mode", "transmission-mode",
+      g_param_spec_enum ("transmission-mode", "Transmission mode",
           "Transmission Mode (DVB-T)", GST_TYPE_BDASRC_TRANSMISSION_MODE,
           DEFAULT_TRANSMISSION_MODE, (GParamFlags) G_PARAM_READWRITE));
 
@@ -331,22 +331,22 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_ORBITAL_POSITION,
-      g_param_spec_int ("orbital-position", "orbital-position",
+      g_param_spec_int ("orbital-position", "Orbital position",
           "Satellite's longitude in tenths of a degree (DVB-S)", 0, G_MAXINT,
           DEFAULT_ORBITAL_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_WEST_POSITION,
-      g_param_spec_boolean ("west-position", "west-position",
+      g_param_spec_boolean ("west-position", "West position",
           "Longitudinal position, true for west longitude (DVB-S)",
           DEFAULT_WEST_POSITION, (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_POLARISATION,
-      g_param_spec_enum ("polarisation", "polarisation",
+      g_param_spec_enum ("polarisation", "Polarisation",
           "Polarisation (DVB-S)", GST_TYPE_BDASRC_POLARISATION,
           DEFAULT_POLARISATION, (GParamFlags) G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class, PROP_INNER_FEC_RATE,
-      g_param_spec_enum ("inner-fec-rate", "inner-fec-rate",
+      g_param_spec_enum ("inner-fec-rate", "Inner FEC rate",
           "Inner FEC rate (DVB-S)", GST_TYPE_BDASRC_FEC_RATE,
           DEFAULT_INNER_FEC_RATE, (GParamFlags) G_PARAM_READWRITE));
 }
