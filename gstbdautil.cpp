@@ -257,6 +257,20 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
 {
   IDigitalLocatorPtr locator;
   switch (src->input_type) {
+    case GST_BDA_ATSC:
+    {
+      HRESULT res = locator.CreateInstance (__uuidof (ATSCLocator));
+      if (FAILED (res)) {
+        GST_ERROR_OBJECT (src, "Unable to create ATSC locator: %s (0x%x)",
+            bda_err_to_str (res).c_str (), res);
+        return FALSE;
+      }
+      // TODO: Do we need to call locator->put_PhysicalChannel?
+      locator->put_CarrierFrequency (src->frequency);
+      locator->put_Modulation (src->modulation);
+      locator->put_InnerFECRate (BDA_BCC_RATE_NOT_SET);
+      break;
+    }
     case GST_BDA_DVB_C:
     {
       HRESULT res = locator.CreateInstance (__uuidof (DVBCLocator));
