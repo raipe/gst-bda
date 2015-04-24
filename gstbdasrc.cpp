@@ -700,6 +700,9 @@ gst_bdasrc_finalize (GObject * object)
   g_return_if_fail (GST_IS_BDASRC (object));
   self = GST_BDASRC (object);
 
+  g_mutex_clear (&self->lock);
+  g_cond_clear (&self->cond);
+
   if (G_OBJECT_CLASS (parent_class)->finalize)
     G_OBJECT_CLASS (parent_class)->finalize (object);
 }
