@@ -48,6 +48,7 @@ GST_DEBUG_CATEGORY (gstbdasrc_debug);
 enum
 {
   ARG_0,
+  ARG_BUFFER_SIZE,
   ARG_BDASRC_DEVICE_INDEX,
   ARG_BDASRC_FREQUENCY,
   ARG_BDASRC_SYM_RATE,
@@ -64,6 +65,7 @@ enum
   ARG_BDASRC_INNER_FEC_RATE
 };
 
+#define DEFAULT_BUFFER_SIZE 50
 #define DEFAULT_DEVICE_INDEX 0
 #define DEFAULT_FREQUENCY 0
 #define DEFAULT_SYMBOL_RATE 0
@@ -281,6 +283,12 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
 
   gstpushsrc_class->create = GST_DEBUG_FUNCPTR (gst_bdasrc_create);
 
+  g_object_class_install_property (gobject_class, ARG_BUFFER_SIZE,
+      g_param_spec_uint ("buffer-size", "Buffer Size",
+          "Size of internal buffer in number of TS samples", 1,
+          G_MAXINT, DEFAULT_BUFFER_SIZE,
+          (GParamFlags) (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+
   g_object_class_install_property (gobject_class, ARG_BDASRC_DEVICE_INDEX,
       g_param_spec_uint ("device", "Device index", "BDA device index, e.g. 0"
           " for the first device", 0, 64, DEFAULT_DEVICE_INDEX,
@@ -352,8 +360,10 @@ gst_bdasrc_init (GstBdaSrc * self)
 
   gst_base_src_set_live (GST_BASE_SRC (self), TRUE);
 
-  self->device_index = DEFAULT_DEVICE_INDEX;
+  self->buffer_size = DEFAULT_BUFFER_SIZE;
   self->input_type = GST_BDA_UNKNOWN;
+
+  self->device_index = DEFAULT_DEVICE_INDEX;
   self->frequency = 0;
   self->symbol_rate = DEFAULT_SYMBOL_RATE;
   self->bandwidth = DEFAULT_BANDWIDTH;
@@ -390,6 +400,9 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
+    case ARG_BUFFER_SIZE:
+      object->buffer_size = g_value_get_uint (value);
+      break;
     case ARG_BDASRC_DEVICE_INDEX:
       object->device_index = g_value_get_uint (value);
       break;
@@ -429,6 +442,9 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
   object = GST_BDASRC (_object);
 
   switch (prop_id) {
+    case ARG_BUFFER_SIZE:
+      g_value_set_uint (value, object->buffer_size);
+      break;
     case ARG_BDASRC_DEVICE_INDEX:
       g_value_set_uint (value, object->device_index);
       break;
@@ -676,8 +692,7 @@ gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data, gsize size)
   g_mutex_lock (&self->lock);
 
   if (!self->flushing) {
-    /* FIXME: Hard coded max size. */
-    while (g_queue_get_length (&self->ts_samples) >= 100) {
+    while (g_queue_get_length (&self->ts_samples) >= self->buffer_size) {
       buffer = (GstBuffer *) g_queue_pop_head (&self->ts_samples);
       GST_WARNING_OBJECT (self, "Dropping TS sample");
       gst_buffer_unref (buffer);

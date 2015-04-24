@@ -81,6 +81,8 @@ struct _GstBdaSrc {
   gboolean flushing;
   /* Queue of MPEG-2 transport stream samples. */
   GQueue ts_samples;
+  /* Max size of ts_samples. */
+  guint buffer_size;
 
   /* Callback function for GstBdaGrabber. */
   void (*sample_received) (GstBdaSrc *bda_src, gpointer data, gsize size);
