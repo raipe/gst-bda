@@ -526,7 +526,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
       FAILED (res = sample_grabber->SetOneShot (FALSE)) ||
       FAILED (res = sample_grabber->SetCallback (bda_src->ts_grabber, 0))) {
     GST_ERROR_OBJECT (bda_src,
-        "Unable to configure ISampleGrabber interface: %s" " (0x%x)",
+        "Unable to configure ISampleGrabber interface: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
