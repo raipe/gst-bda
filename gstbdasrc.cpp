@@ -425,6 +425,19 @@ gst_bdasrc_set_property (GObject * _object, guint prop_id,
     case PROP_HIERARCHY:
       object->hierarchy_information = (HierarchyAlpha) g_value_get_enum (value);
       break;
+    case PROP_ORBITAL_POSITION:
+      object->orbital_position = g_value_get_int (value);
+      break;
+    case PROP_WEST_POSITION:
+      object->west_position = g_value_get_boolean (value);
+      break;
+    case PROP_POLARISATION:
+      object->polarisation = (Polarisation) g_value_get_enum (value);
+      break;
+    case PROP_INNER_FEC_RATE:
+      object->inner_fec_rate =
+          (BinaryConvolutionCodeRate) g_value_get_enum (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
   }
@@ -466,6 +479,18 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
       break;
     case PROP_HIERARCHY:
       g_value_set_enum (value, object->hierarchy_information);
+      break;
+    case PROP_ORBITAL_POSITION:
+      g_value_set_int (value, object->orbital_position);
+      break;
+    case PROP_WEST_POSITION:
+      g_value_set_boolean (value, object->west_position);
+      break;
+    case PROP_POLARISATION:
+      g_value_set_enum (value, object->polarisation);
+      break;
+    case PROP_INNER_FEC_RATE:
+      g_value_set_enum (value, object->inner_fec_rate);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
