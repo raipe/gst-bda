@@ -52,15 +52,18 @@ struct _GstBdaSrc {
 
   GstBdaInputType input_type;
 
+  /* Frequency in kHz */
   int frequency;
+  /* Symbol rate in kHz */
   int symbol_rate;
 
+  /* Bandwidth in MHz */
   int bandwidth;
   ModulationType modulation;
   GuardInterval guard_interval;
   TransmissionMode transmission_mode;
   HierarchyAlpha hierarchy_information;
-  /* DVB-S: Longitude */
+  /* DVB-S: Satellite's longitude in tenths of a degree */
   int orbital_position;
   /* DVB-S: TRUE for west longitude */
   gboolean west_position;

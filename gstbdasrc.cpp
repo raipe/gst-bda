@@ -299,14 +299,14 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
           (GParamFlags) (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
 
   g_object_class_install_property (gobject_class, PROP_SYMBOL_RATE,
-      g_param_spec_uint ("symbol-rate", "Symbol rate",
+      g_param_spec_uint ("symbol-rate", "Symbol rate in kHz",
           "Symbol Rate in kHz (DVB-S, DVB-C)",
           0, G_MAXUINT, DEFAULT_SYMBOL_RATE,
           (GParamFlags) (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
 
   g_object_class_install_property (gobject_class, PROP_BANDWIDTH,
-      g_param_spec_int ("bandwidth", "Bandwidth",
-          "Bandwidth (DVB-T)", 5, 8, DEFAULT_BANDWIDTH,
+      g_param_spec_int ("bandwidth", "Bandwidth in MHz",
+          "Bandwidth in MHz (DVB-T)", 5, 8, DEFAULT_BANDWIDTH,
           (GParamFlags) (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
 
   g_object_class_install_property (gobject_class, PROP_GUARD_INTERVAL,
