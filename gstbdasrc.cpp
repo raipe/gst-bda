@@ -748,7 +748,7 @@ gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buf)
   GstBdaSrc *self = GST_BDASRC (src);
 
   g_mutex_lock (&self->lock);
-  while (g_queue_is_empty (&self->ts_samples)) {
+  while (g_queue_is_empty (&self->ts_samples) && !self->flushing) {
     g_cond_wait (&self->cond, &self->lock);
   }
 
