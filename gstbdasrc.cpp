@@ -700,6 +700,23 @@ gst_bdasrc_finalize (GObject * object)
   g_return_if_fail (GST_IS_BDASRC (object));
   self = GST_BDASRC (object);
 
+  if (self->media_control) {
+    self->media_control->Stop();
+    self->media_control = NULL;
+  }
+  if (self->ts_grabber) {
+    delete self->ts_grabber;
+    self->ts_grabber = NULL;
+  }
+  if (self->network_tuner) {
+    self->network_tuner->Release();
+    self->network_tuner = NULL;
+  }
+  if (self->filter_graph) {
+    self->filter_graph->Release();
+    self->filter_graph = NULL;
+  }
+
   g_mutex_clear (&self->lock);
   g_cond_clear (&self->cond);
 
@@ -809,18 +826,6 @@ gst_bdasrc_stop (GstBaseSrc * bsrc)
   if (src->media_control) {
     src->media_control->Pause ();
     src->media_control->Stop ();
-  }
-  if (src->ts_grabber) {
-    delete src->ts_grabber;
-    src->ts_grabber = NULL;
-  }
-  if (src->network_tuner) {
-    src->network_tuner->Release ();
-    src->network_tuner = NULL;
-  }
-  if (src->filter_graph) {
-    src->filter_graph->Release ();
-    src->filter_graph = NULL;
   }
 
   return TRUE;
