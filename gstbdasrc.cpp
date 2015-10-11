@@ -221,8 +221,6 @@ static void gst_bdasrc_sample_received (GstBdaSrc * self, gpointer data,
     gsize size);
 static GstFlowReturn gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buffer);
 
-static gboolean gst_bdasrc_start (GstBaseSrc * bsrc);
-static gboolean gst_bdasrc_stop (GstBaseSrc * bsrc);
 static GstStateChangeReturn gst_bdasrc_change_state (GstElement * element,
     GstStateChange transition);
 
@@ -273,8 +271,6 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
       "Raimo Järvi <raimo.jarvi@gmail.com>");
 
   gstelement_class->change_state = GST_DEBUG_FUNCPTR (gst_bdasrc_change_state);
-  gstbasesrc_class->start = GST_DEBUG_FUNCPTR (gst_bdasrc_start);
-  gstbasesrc_class->stop = GST_DEBUG_FUNCPTR (gst_bdasrc_stop);
   gstbasesrc_class->is_seekable = GST_DEBUG_FUNCPTR (gst_bdasrc_is_seekable);
   gstbasesrc_class->get_size = GST_DEBUG_FUNCPTR (gst_bdasrc_get_size);
   gstbasesrc_class->unlock = GST_DEBUG_FUNCPTR (gst_bdasrc_unlock);
@@ -690,35 +686,35 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   return TRUE;
 }
 
+/* Releases the DirectShow filter graph. */
+static void
+gst_bdasrc_release_graph (GstBdaSrc * src)
+{
+  if (src->media_control) {
+    src->media_control->Stop ();
+    src->media_control = NULL;
+  }
+  if (src->network_tuner) {
+    src->network_tuner->Release ();
+    src->network_tuner = NULL;
+  }
+  if (src->filter_graph) {
+    src->filter_graph->Release ();
+    src->filter_graph = NULL;
+  }
+}
+
 static void
 gst_bdasrc_finalize (GObject * object)
 {
   GstBdaSrc *self;
 
-  GST_DEBUG_OBJECT (object, "gst_bdasrc_finalize");
-
   g_return_if_fail (GST_IS_BDASRC (object));
   self = GST_BDASRC (object);
 
-  if (self->media_control) {
-    self->media_control->Stop();
-    self->media_control = NULL;
-  }
-  if (self->ts_grabber) {
-    delete self->ts_grabber;
-    self->ts_grabber = NULL;
-  }
-  if (self->network_tuner) {
-    self->network_tuner->Release();
-    self->network_tuner = NULL;
-  }
-  if (self->filter_graph) {
-    self->filter_graph->Release();
-    self->filter_graph = NULL;
-  }
-
   g_mutex_clear (&self->lock);
   g_cond_clear (&self->cond);
+  delete self->ts_grabber;
 
   if (G_OBJECT_CLASS (parent_class)->finalize)
     G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -791,44 +787,42 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
   GstStateChangeReturn ret;
 
   src = GST_BDASRC (element);
-  ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
 
   switch (transition) {
     case GST_STATE_CHANGE_NULL_TO_READY:
-      if (!gst_bdasrc_create_graph (src))
-        ret = GST_STATE_CHANGE_FAILURE;
+      if (!gst_bdasrc_create_graph (src)) {
+        return GST_STATE_CHANGE_FAILURE;
+      }
+      break;
+    case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
+      if (src->media_control) {
+        src->media_control->Stop ();
+      }
+      break;
+    case GST_STATE_CHANGE_READY_TO_NULL:
+      gst_bdasrc_release_graph (src);
+      break;
+    default:
+      break;
+  }
+
+  ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
+  if (ret == GST_STATE_CHANGE_FAILURE) {
+    return ret;
+  }
+
+  switch (transition) {
+    case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
       src->flushing = FALSE;
+      if (!gst_bdasrc_tune (src)) {
+        ret = GST_STATE_CHANGE_FAILURE;
+      }
       break;
     default:
       break;
   }
 
   return ret;
-}
-
-static gboolean
-gst_bdasrc_start (GstBaseSrc * base_src)
-{
-  GstBdaSrc *bda_src = GST_BDASRC (base_src);
-
-  if (!gst_bdasrc_tune (bda_src)) {
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-static gboolean
-gst_bdasrc_stop (GstBaseSrc * bsrc)
-{
-  GstBdaSrc *src = GST_BDASRC (bsrc);
-
-  if (src->media_control) {
-    src->media_control->Pause ();
-    src->media_control->Stop ();
-  }
-
-  return TRUE;
 }
 
 static gboolean
