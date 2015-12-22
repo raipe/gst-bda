@@ -705,12 +705,22 @@ gst_bdasrc_release_graph (GstBdaSrc * src)
 }
 
 static void
+gst_bda_release_samples (GstBdaSrc * self) {
+  g_mutex_lock (&self->lock);
+  g_queue_foreach (&self->ts_samples, (GFunc)gst_buffer_unref, NULL);
+  g_queue_clear (&self->ts_samples);
+  g_mutex_unlock (&self->lock);
+}
+
+static void
 gst_bdasrc_finalize (GObject * object)
 {
   GstBdaSrc *self;
 
   g_return_if_fail (GST_IS_BDASRC (object));
   self = GST_BDASRC (object);
+
+  gst_bda_release_samples (self);
 
   g_mutex_clear (&self->lock);
   g_cond_clear (&self->cond);
@@ -812,10 +822,14 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
   }
 
   switch (transition) {
+    case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
+      gst_bda_release_samples (src);
+      break;
     case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
       src->flushing = FALSE;
       if (!gst_bdasrc_tune (src)) {
         ret = GST_STATE_CHANGE_FAILURE;
+        gst_bda_release_samples (src);
       }
       break;
     default:
