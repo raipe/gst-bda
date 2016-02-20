@@ -900,10 +900,10 @@ gst_bdasrc_tune (GstBdaSrc * bda_src)
     return FALSE;
   }
 
-  ULONG node_type_count;
+  ULONG node_type_count = 0;
   ULONG node_types[32];
   res =
-      bda_topology->GetNodeTypes (&node_type_count, sizeof (node_types),
+      bda_topology->GetNodeTypes (&node_type_count, _countof (node_types),
       node_types);
   if (FAILED (res)) {
     bda_src->media_control->Stop ();
