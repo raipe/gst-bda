@@ -41,8 +41,13 @@ trim_string (char *str)
     str++;
   }
 
+  size_t len = strlen(str);
+  if (len == 0) {
+    return str;
+  }
+
   /* Trim trailing whitespace. */
-  for (size_t i = strlen (str) - 1; i >= 0; i--) {
+  for (size_t i = len - 1; i != 0; i--) {
     if (!isspace (str[i])) {
       break;
     }
