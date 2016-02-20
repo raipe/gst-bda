@@ -62,5 +62,6 @@ _COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
 _COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
 _COM_SMARTPTR_TYPEDEF (ITuningSpace, __uuidof (ITuningSpace));
 _COM_SMARTPTR_TYPEDEF (ITuningSpaceContainer, __uuidof (ITuningSpaceContainer));
+_COM_SMARTPTR_TYPEDEF (IUnknown, __uuidof (IUnknown));
 
 #endif

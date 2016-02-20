@@ -692,7 +692,12 @@ gst_bdasrc_release_graph (GstBdaSrc * src)
 {
   if (src->media_control) {
     src->media_control->Stop ();
+    src->media_control->Release ();
     src->media_control = NULL;
+  }
+  if (src->receiver && src->receiver != src->network_tuner) {
+    src->receiver->Release ();
+    src->receiver = NULL;
   }
   if (src->network_tuner) {
     src->network_tuner->Release ();
@@ -721,6 +726,7 @@ gst_bdasrc_finalize (GObject * object)
   self = GST_BDASRC (object);
 
   gst_bda_release_samples (self);
+  gst_bdasrc_release_graph (self);
 
   g_mutex_clear (&self->lock);
   g_cond_clear (&self->cond);
@@ -906,11 +912,10 @@ gst_bdasrc_tune (GstBdaSrc * bda_src)
 
   IBDA_SignalStatisticsPtr signal_stats;
   for (ULONG i = 0; i < node_type_count; i++) {
-    IUnknown *node = NULL;
+    IUnknownPtr node;
     res = bda_topology->GetControlNode (0, 1, node_types[i], &node);
     if (res == S_OK) {
       res = node->QueryInterface (&signal_stats);
-      node->Release ();
 
       BOOLEAN locked;
       if (SUCCEEDED (signal_stats->get_SignalLocked (&locked))) {
