@@ -179,7 +179,8 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self, ITuningSpacePtr & tuning_space
   }
 
   ITuningSpacePtr ts;
-  while (space_enum->Next (1, &ts, NULL) == S_OK) {
+  ULONG fetched = 0;
+  while (space_enum->Next (1, &ts, &fetched) == S_OK) {
     CLSID type;
     res = ts->get__NetworkType (&type);
     if (FAILED (res) || type == GUID_NULL) {
