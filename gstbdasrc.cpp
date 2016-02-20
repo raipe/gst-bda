@@ -917,7 +917,7 @@ gst_bdasrc_tune (GstBdaSrc * bda_src)
     if (res == S_OK) {
       res = node->QueryInterface (&signal_stats);
 
-      BOOLEAN locked;
+      BOOLEAN locked = FALSE;
       if (SUCCEEDED (signal_stats->get_SignalLocked (&locked))) {
         return locked;
       }

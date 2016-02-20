@@ -109,7 +109,7 @@ gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
   }
 
   BDANODE_DESCRIPTOR desc[32];
-  ULONG n_desc;
+  ULONG n_desc = 0;
   res = bda_topology->GetNodeDescriptors (&n_desc, _countof (desc), desc);
   if (FAILED (res)) {
     return GST_BDA_UNKNOWN;
