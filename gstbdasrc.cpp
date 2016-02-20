@@ -78,8 +78,6 @@ enum
 #define DEFAULT_POLARISATION BDA_POLARISATION_NOT_SET
 #define DEFAULT_INNER_FEC_RATE BDA_BCC_RATE_NOT_SET
 
-static void gst_bdasrc_output_frontend_stats (GstBdaSrc * src);
-
 #define GST_TYPE_BDASRC_MODULATION (gst_bdasrc_modulation_get_type ())
 static GType
 gst_bdasrc_modulation_get_type (void)
