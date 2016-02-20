@@ -228,7 +228,7 @@ static gboolean gst_bdasrc_unlock_stop (GstBaseSrc * bsrc);
 static gboolean gst_bdasrc_is_seekable (GstBaseSrc * bsrc);
 static gboolean gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size);
 
-static gboolean gst_bdasrc_tune (GstBdaSrc * object);
+static gboolean gst_bdasrc_tune (GstBdaSrc * self);
 
 static GstStaticPadTemplate ts_src_factory = GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
@@ -500,25 +500,25 @@ gst_bdasrc_get_property (GObject * _object, guint prop_id,
 
 /* Creates the DirectShow filter graph. */
 static gboolean
-gst_bdasrc_create_graph (GstBdaSrc * src)
+gst_bdasrc_create_graph (GstBdaSrc * self)
 {
   HRESULT res = CoCreateInstance (CLSID_FilterGraph, NULL, CLSCTX_ALL,
-      __uuidof (IGraphBuilder), (LPVOID *) & src->filter_graph);
+      __uuidof (IGraphBuilder), (LPVOID *) & self->filter_graph);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to create filter graph");
+    GST_ERROR_OBJECT (self, "Unable to create filter graph");
     return FALSE;
   }
 
-  res = src->filter_graph->QueryInterface (&src->media_control);
+  res = self->filter_graph->QueryInterface (&self->media_control);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to get media control");
+    GST_ERROR_OBJECT (self, "Unable to get media control");
     return FALSE;
   }
 
   ICreateDevEnumPtr sys_dev_enum;
   res = sys_dev_enum.CreateInstance (CLSID_SystemDeviceEnum);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to enumerate BDA devices");
+    GST_ERROR_OBJECT (self, "Unable to enumerate BDA devices");
     return FALSE;
   }
 
@@ -528,17 +528,17 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
       &enum_tuner, 0);
   if (res == S_FALSE) {
     /* The device category does not exist or is empty. */
-    GST_ERROR_OBJECT (src, "No BDA tuner devices");
+    GST_ERROR_OBJECT (self, "No BDA tuner devices");
     return FALSE;
   } else if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to enumerate BDA tuner devices");
+    GST_ERROR_OBJECT (self, "Unable to enumerate BDA tuner devices");
     return FALSE;
   }
 
-  if (src->device_index > 0) {
-    res = enum_tuner->Skip (src->device_index);
+  if (self->device_index > 0) {
+    res = enum_tuner->Skip (self->device_index);
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "BDA device %d doesn't exist", src->device_index);
+      GST_ERROR_OBJECT (self, "BDA device %d doesn't exist", self->device_index);
       return FALSE;
     }
   }
@@ -547,36 +547,36 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   ULONG fetched;
   res = enum_tuner->Next (1, &tuner_moniker, &fetched);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to get BDA tuner");
+    GST_ERROR_OBJECT (self, "Unable to get BDA tuner");
     return FALSE;
   }
 
   std::string tuner_name = bda_get_tuner_name (tuner_moniker);
-  GST_INFO_OBJECT (src, "Using BDA tuner device '%s'", tuner_name.c_str ());
+  GST_INFO_OBJECT (self, "Using BDA tuner device '%s'", tuner_name.c_str ());
 
   res = tuner_moniker->BindToObject (NULL, NULL, IID_IBaseFilter,
-      (void **) &src->network_tuner);
+      (void **) &self->network_tuner);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to bind to BDA tuner");
+    GST_ERROR_OBJECT (self, "Unable to bind to BDA tuner");
     return FALSE;
   }
 
-  src->input_type = gst_bdasrc_get_input_type (src);
-  if (src->input_type == GST_BDA_UNKNOWN) {
-    GST_ERROR_OBJECT (src, "Can't determine device type for BDA tuner '%s'",
+  self->input_type = gst_bdasrc_get_input_type (self);
+  if (self->input_type == GST_BDA_UNKNOWN) {
+    GST_ERROR_OBJECT (self, "Can't determine device type for BDA tuner '%s'",
         tuner_name.c_str ());
     return FALSE;
   }
 
   ITuningSpacePtr tuning_space;
-  if (!gst_bdasrc_create_tuning_space (src, tuning_space)) {
-    GST_ERROR_OBJECT (src, "Unable to create tuning space");
+  if (!gst_bdasrc_create_tuning_space (self, tuning_space)) {
+    GST_ERROR_OBJECT (self, "Unable to create tuning space");
     return FALSE;
   }
 
   CLSID network_type;
-  if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
-    GST_ERROR_OBJECT (src, "Can't determine network type");
+  if (!gst_bdasrc_get_network_type (self->input_type, network_type)) {
+    GST_ERROR_OBJECT (self, "Can't determine network type");
     return FALSE;
   }
 
@@ -584,20 +584,20 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 
   res = network_provider.CreateInstance (network_type);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to create network provider");
+    GST_ERROR_OBJECT (self, "Unable to create network provider");
     return FALSE;
   }
 
-  res = src->filter_graph->AddFilter (network_provider, L"Network Provider");
+  res = self->filter_graph->AddFilter (network_provider, L"Network Provider");
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to add network provider to graph");
+    GST_ERROR_OBJECT (self, "Unable to add network provider to graph");
     return FALSE;
   }
 
   IScanningTunerPtr tuner;
   res = network_provider->QueryInterface (&tuner);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to get tuner interface");
+    GST_ERROR_OBJECT (self, "Unable to get tuner interface");
     return FALSE;
   }
 
@@ -606,42 +606,42 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 
   res = tuning_space->CreateTuneRequest (&tune_request);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to create tune request");
+    GST_ERROR_OBJECT (self, "Unable to create tune request");
     return FALSE;
   }
 
   res = tune_request->QueryInterface (&dvb_tune_request);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to get DVB tune request interface");
+    GST_ERROR_OBJECT (self, "Unable to get DVB tune request interface");
     return FALSE;
   }
 
-  if (!gst_bdasrc_init_tune_request (src, dvb_tune_request)) {
-    GST_ERROR_OBJECT (src, "Unable to initialise tune request");
+  if (!gst_bdasrc_init_tune_request (self, dvb_tune_request)) {
+    GST_ERROR_OBJECT (self, "Unable to initialise tune request");
     return FALSE;
   }
 
   res = tuner->Validate (dvb_tune_request);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to validate tune request");
+    GST_ERROR_OBJECT (self, "Unable to validate tune request");
     return FALSE;
   }
 
   res = tuner->put_TuneRequest (dvb_tune_request);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to submit tune request");
+    GST_ERROR_OBJECT (self, "Unable to submit tune request");
     return FALSE;
   }
 
-  res = src->filter_graph->AddFilter (src->network_tuner, L"Tuner device");
+  res = self->filter_graph->AddFilter (self->network_tuner, L"Tuner device");
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to add tuner to filter graph");
+    GST_ERROR_OBJECT (self, "Unable to add tuner to filter graph");
     return FALSE;
   }
 
-  res = gst_bdasrc_connect_filters (src, network_provider, src->network_tuner);
+  res = gst_bdasrc_connect_filters (self, network_provider, self->network_tuner);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to connect tuner: %s (0x%x)",
+    GST_ERROR_OBJECT (self, "Unable to connect tuner: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
@@ -649,35 +649,35 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
   IBaseFilterPtr demux;
   res = demux.CreateInstance (CLSID_MPEG2Demultiplexer);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to create MPEG2Demultiplexer");
+    GST_ERROR_OBJECT (self, "Unable to create MPEG2Demultiplexer");
     return FALSE;
   }
 
-  res = src->filter_graph->AddFilter (demux, L"Demux");
+  res = self->filter_graph->AddFilter (demux, L"Demux");
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to add demux filter to graph");
+    GST_ERROR_OBJECT (self, "Unable to add demux filter to graph");
     return FALSE;
   }
 
   IBaseFilterPtr ts_capture;
-  if (!gst_bdasrc_create_ts_capture (src, sys_dev_enum, ts_capture)) {
+  if (!gst_bdasrc_create_ts_capture (self, sys_dev_enum, ts_capture)) {
     return FALSE;
   }
 
-  res = gst_bdasrc_connect_filters (src, ts_capture, demux);
+  res = gst_bdasrc_connect_filters (self, ts_capture, demux);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to connect TS capture to demux: %s (0x%x)",
+    GST_ERROR_OBJECT (self, "Unable to connect TS capture to demux: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
   IBaseFilterPtr tif;
   res =
-      gst_bdasrc_load_filter (src, sys_dev_enum,
+      gst_bdasrc_load_filter (self, sys_dev_enum,
       KSCATEGORY_BDA_TRANSPORT_INFORMATION, demux, &tif);
 
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to load transport information filter");
+    GST_ERROR_OBJECT (self, "Unable to load transport information filter");
     return FALSE;
   }
 
@@ -686,24 +686,24 @@ gst_bdasrc_create_graph (GstBdaSrc * src)
 
 /* Releases the DirectShow filter graph. */
 static void
-gst_bdasrc_release_graph (GstBdaSrc * src)
+gst_bdasrc_release_graph (GstBdaSrc * self)
 {
-  if (src->media_control) {
-    src->media_control->Stop ();
-    src->media_control->Release ();
-    src->media_control = NULL;
+  if (self->media_control) {
+    self->media_control->Stop ();
+    self->media_control->Release ();
+    self->media_control = NULL;
   }
-  if (src->receiver && src->receiver != src->network_tuner) {
-    src->receiver->Release ();
-    src->receiver = NULL;
+  if (self->receiver && self->receiver != self->network_tuner) {
+    self->receiver->Release ();
+    self->receiver = NULL;
   }
-  if (src->network_tuner) {
-    src->network_tuner->Release ();
-    src->network_tuner = NULL;
+  if (self->network_tuner) {
+    self->network_tuner->Release ();
+    self->network_tuner = NULL;
   }
-  if (src->filter_graph) {
-    src->filter_graph->Release ();
-    src->filter_graph = NULL;
+  if (self->filter_graph) {
+    self->filter_graph->Release ();
+    self->filter_graph = NULL;
   }
 }
 
@@ -797,24 +797,24 @@ gst_bdasrc_create (GstPushSrc * src, GstBuffer ** buf)
 static GstStateChangeReturn
 gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
 {
-  GstBdaSrc *src;
+  GstBdaSrc *self;
   GstStateChangeReturn ret;
 
-  src = GST_BDASRC (element);
+  self = GST_BDASRC (element);
 
   switch (transition) {
     case GST_STATE_CHANGE_NULL_TO_READY:
-      if (!gst_bdasrc_create_graph (src)) {
+      if (!gst_bdasrc_create_graph (self)) {
         return GST_STATE_CHANGE_FAILURE;
       }
       break;
     case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
-      if (src->media_control) {
-        src->media_control->Stop ();
+      if (self->media_control) {
+        self->media_control->Stop ();
       }
       break;
     case GST_STATE_CHANGE_READY_TO_NULL:
-      gst_bdasrc_release_graph (src);
+      gst_bdasrc_release_graph (self);
       break;
     default:
       break;
@@ -827,13 +827,13 @@ gst_bdasrc_change_state (GstElement * element, GstStateChange transition)
 
   switch (transition) {
     case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
-      gst_bda_release_samples (src);
+      gst_bda_release_samples (self);
       break;
     case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
-      src->flushing = FALSE;
-      if (!gst_bdasrc_tune (src)) {
+      self->flushing = FALSE;
+      if (!gst_bdasrc_tune (self)) {
         ret = GST_STATE_CHANGE_FAILURE;
-        gst_bda_release_samples (src);
+        gst_bda_release_samples (self);
       }
       break;
     default:
@@ -883,18 +883,18 @@ gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size)
 }
 
 static gboolean
-gst_bdasrc_tune (GstBdaSrc * bda_src)
+gst_bdasrc_tune (GstBdaSrc * self)
 {
-  HRESULT res = bda_src->media_control->Run ();
+  HRESULT res = self->media_control->Run ();
   if (FAILED (res)) {
-    bda_src->media_control->Stop ();
+    self->media_control->Stop ();
     return FALSE;
   }
 
   IBDA_TopologyPtr bda_topology;
-  res = bda_src->network_tuner->QueryInterface (&bda_topology);
+  res = self->network_tuner->QueryInterface (&bda_topology);
   if (FAILED (res)) {
-    bda_src->media_control->Stop ();
+    self->media_control->Stop ();
     return FALSE;
   }
 
@@ -904,7 +904,7 @@ gst_bdasrc_tune (GstBdaSrc * bda_src)
       bda_topology->GetNodeTypes (&node_type_count, _countof (node_types),
       node_types);
   if (FAILED (res)) {
-    bda_src->media_control->Stop ();
+    self->media_control->Stop ();
     return FALSE;
   }
 

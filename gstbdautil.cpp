@@ -105,10 +105,10 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
 }
 
 GstBdaInputType
-gst_bdasrc_get_input_type (GstBdaSrc * bda_src)
+gst_bdasrc_get_input_type (GstBdaSrc * self)
 {
   IBDA_TopologyPtr bda_topology;
-  HRESULT res = bda_src->network_tuner->QueryInterface (&bda_topology);
+  HRESULT res = self->network_tuner->QueryInterface (&bda_topology);
   if (FAILED (res)) {
     return GST_BDA_UNKNOWN;
   }
@@ -158,10 +158,10 @@ gst_bdasrc_get_network_type (GstBdaInputType input_type, CLSID & network_type)
 }
 
 BOOL
-gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
+gst_bdasrc_create_tuning_space (GstBdaSrc * self, ITuningSpacePtr & tuning_space)
 {
   CLSID network_type;
-  if (!gst_bdasrc_get_network_type (src->input_type, network_type)) {
+  if (!gst_bdasrc_get_network_type (self->input_type, network_type)) {
     return FALSE;
   }
 
@@ -193,10 +193,10 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
   }
 
   // No existing tuning space found, create a new one.
-  if (src->input_type == GST_BDA_ATSC) {
+  if (self->input_type == GST_BDA_ATSC) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (ATSCTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "Error creating ATSC tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating ATSC tuning space: %s (0x%x)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -204,11 +204,11 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
     tuning_space->put__NetworkType (ATSC_TERRESTRIAL_TV_NETWORK_TYPE);
 
     return TRUE;
-  } else if (src->input_type == GST_BDA_DVB_C
-      || src->input_type == GST_BDA_DVB_T) {
+  } else if (self->input_type == GST_BDA_DVB_C
+      || self->input_type == GST_BDA_DVB_T) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "Error creating DVB tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating DVB tuning space: %s (0x%x)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -216,12 +216,12 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
     IDVBTuningSpacePtr dvb_tuning_space;
     res = tuning_space->QueryInterface (&dvb_tuning_space);
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "Unable to get DVB tuning space interface: %s"
+      GST_ERROR_OBJECT (self, "Unable to get DVB tuning space interface: %s"
           " (0x%x)", bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
 
-    if (src->input_type == GST_BDA_DVB_C) {
+    if (self->input_type == GST_BDA_DVB_C) {
       dvb_tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
       dvb_tuning_space->put_SystemType (DVB_Cable);
     } else {
@@ -230,10 +230,10 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
     }
 
     return TRUE;
-  } else if (src->input_type == GST_BDA_DVB_S) {
+  } else if (self->input_type == GST_BDA_DVB_S) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (DVBSTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "Error creating DVB-S tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating DVB-S tuning space: %s (0x%x)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -241,7 +241,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
     IDVBSTuningSpacePtr dvbs_tuning_space;
     res = tuning_space->QueryInterface (&dvbs_tuning_space);
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (src, "Unable to get DVB-S tuning space interface: %s"
+      GST_ERROR_OBJECT (self, "Unable to get DVB-S tuning space interface: %s"
           " (0x%x)", bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
