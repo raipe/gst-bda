@@ -440,7 +440,7 @@ gst_bdasrc_load_filter (GstBdaSrc * src, ICreateDevEnum * sys_dev_enum,
 
   IMonikerPtr moniker;
   int monikerIndex = -1;
-  while (enum_moniker->Next (1, &moniker, 0) == S_OK) {
+  while (enum_moniker->Next (1, &moniker, NULL) == S_OK) {
     monikerIndex++;
 
     IPropertyBagPtr bag;
