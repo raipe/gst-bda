@@ -77,7 +77,7 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
   std::string name;
 
   IPropertyBagPtr property_bag;
-  HRESULT res = tuner_moniker->BindToStorage (0, 0, IID_IPropertyBag,
+  HRESULT res = tuner_moniker->BindToStorage (NULL, NULL, IID_IPropertyBag,
       reinterpret_cast < void **>(&property_bag));
   if (FAILED (res)) {
     return name;
@@ -85,7 +85,7 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
 
   VARIANT var_name;
   VariantInit (&var_name);
-  res = property_bag->Read (L"FriendlyName", &var_name, 0);
+  res = property_bag->Read (L"FriendlyName", &var_name, NULL);
 
   if (FAILED (res)) {
     VariantClear (&var_name);
