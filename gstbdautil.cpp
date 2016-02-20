@@ -187,10 +187,8 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * src, ITuningSpacePtr & tuning_space)
     }
 
     if (type == network_type) {
-      res = ts->QueryInterface (&tuning_space);
-      if (SUCCEEDED (res)) {
-        return TRUE;
-      }
+      tuning_space = ts;
+      return TRUE;
     }
   }
 
