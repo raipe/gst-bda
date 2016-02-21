@@ -48,7 +48,7 @@ STDMETHODIMP GstBdaGrabber::QueryInterface (REFIID riid, void **object)
 
 STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
 {
-  BYTE *data = nullptr;
+  BYTE *data = NULL;
   HRESULT hr = sample->GetPointer(&data);
 
   if (FAILED (hr)) {
