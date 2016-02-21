@@ -41,19 +41,22 @@ STDMETHODIMP_ (ULONG) GstBdaGrabber::Release ()
   return 1;
 }
 
-STDMETHODIMP GstBdaGrabber::QueryInterface (REFIID /*riid */ , void ** /*object */ )
+STDMETHODIMP
+    GstBdaGrabber::QueryInterface (REFIID /*riid */ , void ** /*object */ )
 {
   return E_NOTIMPL;
 }
 
 STDMETHODIMP GstBdaGrabber::SampleCB (double /*time */ , IMediaSample * sample)
 {
-  BYTE *data = NULL;
-  HRESULT hr = sample->GetPointer(&data);
+  BYTE *
+      data = NULL;
+  HRESULT
+      hr = sample->GetPointer (&data);
 
   if (FAILED (hr)) {
     GST_ERROR_OBJECT (bda_src, "Unable to get sample data: %s (0x%lx)",
-        bda_err_to_str (hr).c_str(), hr);
+        bda_err_to_str (hr).c_str (), hr);
     return S_FALSE;
   }
 
@@ -62,7 +65,8 @@ STDMETHODIMP GstBdaGrabber::SampleCB (double /*time */ , IMediaSample * sample)
   return S_OK;
 }
 
-STDMETHODIMP GstBdaGrabber::BufferCB (double /*time */ , BYTE * /*buffer */ , long /*bufferLen */ )
+STDMETHODIMP GstBdaGrabber::BufferCB (double /*time */ , BYTE * /*buffer */ ,
+    long /*bufferLen */ )
 {
   return E_FAIL;
 }
