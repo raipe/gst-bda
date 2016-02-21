@@ -52,7 +52,7 @@ STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
   HRESULT hr = sample->GetPointer(&data);
 
   if (FAILED (hr)) {
-    GST_ERROR_OBJECT (bda_src, "Unable to get sample data: %s (0x%x)",
+    GST_ERROR_OBJECT (bda_src, "Unable to get sample data: %s (0x%lx)",
         bda_err_to_str (hr).c_str(), hr);
     return S_FALSE;
   }
