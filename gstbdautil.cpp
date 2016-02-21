@@ -204,7 +204,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
       return FALSE;
     }
 
-    tuning_space->put__NetworkType (ATSC_TERRESTRIAL_TV_NETWORK_TYPE);
+    tuning_space->put__NetworkType (CLSID_ATSCNetworkProvider);
 
     return TRUE;
   } else if (self->input_type == GST_BDA_DVB_C
@@ -225,10 +225,10 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
     }
 
     if (self->input_type == GST_BDA_DVB_C) {
-      dvb_tuning_space->put__NetworkType (DVB_CABLE_TV_NETWORK_TYPE);
+      dvb_tuning_space->put__NetworkType (CLSID_DVBCNetworkProvider);
       dvb_tuning_space->put_SystemType (DVB_Cable);
     } else {
-      dvb_tuning_space->put__NetworkType (DVB_TERRESTRIAL_TV_NETWORK_TYPE);
+      dvb_tuning_space->put__NetworkType (CLSID_DVBTNetworkProvider);
       dvb_tuning_space->put_SystemType (DVB_Terrestrial);
     }
 
@@ -249,7 +249,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
       return FALSE;
     }
 
-    dvbs_tuning_space->put__NetworkType (DVB_SATELLITE_TV_NETWORK_TYPE);
+    dvbs_tuning_space->put__NetworkType (CLSID_DVBSNetworkProvider);
     dvbs_tuning_space->put_SystemType (DVB_Satellite);
     return TRUE;
   }
