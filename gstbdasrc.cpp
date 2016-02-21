@@ -225,9 +225,6 @@ static GstStateChangeReturn gst_bdasrc_change_state (GstElement * element,
 static gboolean gst_bdasrc_unlock (GstBaseSrc * bsrc);
 static gboolean gst_bdasrc_unlock_stop (GstBaseSrc * bsrc);
 
-static gboolean gst_bdasrc_is_seekable (GstBaseSrc * bsrc);
-static gboolean gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size);
-
 static gboolean gst_bdasrc_tune (GstBdaSrc * self);
 
 static GstStaticPadTemplate ts_src_factory = GST_STATIC_PAD_TEMPLATE ("src",
@@ -269,8 +266,6 @@ gst_bdasrc_class_init (GstBdaSrcClass * klass)
       "Raimo Järvi <raimo.jarvi@gmail.com>");
 
   gstelement_class->change_state = GST_DEBUG_FUNCPTR (gst_bdasrc_change_state);
-  gstbasesrc_class->is_seekable = GST_DEBUG_FUNCPTR (gst_bdasrc_is_seekable);
-  gstbasesrc_class->get_size = GST_DEBUG_FUNCPTR (gst_bdasrc_get_size);
   gstbasesrc_class->unlock = GST_DEBUG_FUNCPTR (gst_bdasrc_unlock);
   gstbasesrc_class->unlock_stop = GST_DEBUG_FUNCPTR (gst_bdasrc_unlock_stop);
 
@@ -871,18 +866,6 @@ gst_bdasrc_unlock_stop (GstBaseSrc * bsrc)
   g_mutex_unlock (&self->lock);
 
   return TRUE;
-}
-
-static gboolean
-gst_bdasrc_is_seekable (GstBaseSrc * bsrc)
-{
-  return FALSE;
-}
-
-static gboolean
-gst_bdasrc_get_size (GstBaseSrc * src, guint64 * size)
-{
-  return FALSE;
 }
 
 static gboolean
