@@ -41,12 +41,12 @@ STDMETHODIMP_ (ULONG) GstBdaGrabber::Release ()
   return 1;
 }
 
-STDMETHODIMP GstBdaGrabber::QueryInterface (REFIID riid, void **object)
+STDMETHODIMP GstBdaGrabber::QueryInterface (REFIID /*riid */ , void ** /*object */ )
 {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
+STDMETHODIMP GstBdaGrabber::SampleCB (double /*time */ , IMediaSample * sample)
 {
   BYTE *data = NULL;
   HRESULT hr = sample->GetPointer(&data);
@@ -62,7 +62,7 @@ STDMETHODIMP GstBdaGrabber::SampleCB (double time, IMediaSample * sample)
   return S_OK;
 }
 
-STDMETHODIMP GstBdaGrabber::BufferCB (double time, BYTE * buffer, long bufferLen)
+STDMETHODIMP GstBdaGrabber::BufferCB (double /*time */ , BYTE * /*buffer */ , long /*bufferLen */ )
 {
   return E_FAIL;
 }
