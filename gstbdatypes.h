@@ -59,6 +59,7 @@ _COM_SMARTPTR_TYPEDEF (IEnumTuningSpaces, __uuidof (IEnumTuningSpaces));
 _COM_SMARTPTR_TYPEDEF (IDigitalLocator, __uuidof (IDigitalLocator));
 _COM_SMARTPTR_TYPEDEF (IMoniker, __uuidof (IMoniker));
 _COM_SMARTPTR_TYPEDEF (IPin, __uuidof (IPin));
+_COM_SMARTPTR_TYPEDEF (IPropertyBag, __uuidof (IPropertyBag));
 _COM_SMARTPTR_TYPEDEF (ISampleGrabber, __uuidof (ISampleGrabber));
 _COM_SMARTPTR_TYPEDEF (IScanningTuner, __uuidof (IScanningTuner));
 _COM_SMARTPTR_TYPEDEF (ITuneRequest, __uuidof (ITuneRequest));
