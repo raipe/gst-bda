@@ -27,6 +27,7 @@
 #include <bdamedia.h>
 #include <bdaiface.h>
 #include <tuner.h>
+#include <uuids.h>
 #include <qedit.h>
 #include "gstbdagrabber.h"
 #include "gstbdatypes.h"
