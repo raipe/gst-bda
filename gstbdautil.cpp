@@ -41,7 +41,7 @@ trim_string (char *str)
     str++;
   }
 
-  size_t len = strlen(str);
+  size_t len = strlen (str);
   if (len == 0) {
     return str;
   }
@@ -158,13 +158,13 @@ gst_bdasrc_get_network_type (GstBdaInputType input_type, CLSID & network_type)
 }
 
 BOOL
-gst_bdasrc_create_tuning_space (GstBdaSrc * self, ITuningSpacePtr & tuning_space)
+gst_bdasrc_create_tuning_space (GstBdaSrc * self,
+    ITuningSpacePtr & tuning_space)
 {
   CLSID network_type;
   if (!gst_bdasrc_get_network_type (self->input_type, network_type)) {
     return FALSE;
   }
-
   // First we look for an existing tuning space that matches network type.
   ITuningSpaceContainerPtr tuning_spaces;
   HRESULT res = tuning_spaces.CreateInstance (__uuidof (SystemTuningSpaces));

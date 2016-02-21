@@ -538,7 +538,8 @@ gst_bdasrc_create_graph (GstBdaSrc * self)
   if (self->device_index > 0) {
     res = enum_tuner->Skip (self->device_index);
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (self, "BDA device %d doesn't exist", self->device_index);
+      GST_ERROR_OBJECT (self, "BDA device %d doesn't exist",
+          self->device_index);
       return FALSE;
     }
   }
@@ -639,7 +640,8 @@ gst_bdasrc_create_graph (GstBdaSrc * self)
     return FALSE;
   }
 
-  res = gst_bdasrc_connect_filters (self, network_provider, self->network_tuner);
+  res =
+      gst_bdasrc_connect_filters (self, network_provider, self->network_tuner);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (self, "Unable to connect tuner: %s (0x%x)",
         bda_err_to_str (res).c_str (), res);
@@ -708,9 +710,10 @@ gst_bdasrc_release_graph (GstBdaSrc * self)
 }
 
 static void
-gst_bda_release_samples (GstBdaSrc * self) {
+gst_bda_release_samples (GstBdaSrc * self)
+{
   g_mutex_lock (&self->lock);
-  g_queue_foreach (&self->ts_samples, (GFunc)gst_buffer_unref, NULL);
+  g_queue_foreach (&self->ts_samples, (GFunc) gst_buffer_unref, NULL);
   g_queue_clear (&self->ts_samples);
   g_mutex_unlock (&self->lock);
 }
