@@ -95,7 +95,8 @@ bda_get_tuner_name (IMoniker * tuner_moniker)
 
   char mb[512];
   size_t size;
-  errno_t err = wcstombs_s (&size, mb, sizeof(mb), var_name.bstrVal, _TRUNCATE);
+  errno_t err =
+      wcstombs_s (&size, mb, sizeof (mb), var_name.bstrVal, _TRUNCATE);
   if (err == 0) {
     name = mb;
   }
