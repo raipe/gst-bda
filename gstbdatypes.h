@@ -20,6 +20,14 @@
 #ifndef __GST_BDATYPES_H__
 #define __GST_BDATYPES_H__
 
+#ifdef __GNUC__
+  // MinGW comdef.h requires this for sprintf_s
+  #include <stdio.h>
+
+  // This is missing from MinGW qedit.h
+  extern "C" const CLSID CLSID_SampleGrabber;
+#endif
+
 #include <gst/gst.h>
 #include <comdef.h>
 // To obtain Qedit.h, download the Microsoft Windows SDK Update for Windows Vista and .NET Framework 3.0:
