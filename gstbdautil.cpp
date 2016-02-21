@@ -199,7 +199,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
   if (self->input_type == GST_BDA_ATSC) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (ATSCTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (self, "Error creating ATSC tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating ATSC tuning space: %s (0x%lx)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -211,7 +211,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
       || self->input_type == GST_BDA_DVB_T) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (DVBTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (self, "Error creating DVB tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating DVB tuning space: %s (0x%lx)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -220,7 +220,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
     res = tuning_space->QueryInterface (&dvb_tuning_space);
     if (FAILED (res)) {
       GST_ERROR_OBJECT (self, "Unable to get DVB tuning space interface: %s"
-          " (0x%x)", bda_err_to_str (res).c_str (), res);
+          " (0x%lx)", bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
 
@@ -236,7 +236,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
   } else if (self->input_type == GST_BDA_DVB_S) {
     HRESULT res = tuning_space.CreateInstance (__uuidof (DVBSTuningSpace));
     if (FAILED (res)) {
-      GST_ERROR_OBJECT (self, "Error creating DVB-S tuning space: %s (0x%x)",
+      GST_ERROR_OBJECT (self, "Error creating DVB-S tuning space: %s (0x%lx)",
           bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
@@ -245,7 +245,7 @@ gst_bdasrc_create_tuning_space (GstBdaSrc * self,
     res = tuning_space->QueryInterface (&dvbs_tuning_space);
     if (FAILED (res)) {
       GST_ERROR_OBJECT (self, "Unable to get DVB-S tuning space interface: %s"
-          " (0x%x)", bda_err_to_str (res).c_str (), res);
+          " (0x%lx)", bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
 
@@ -267,7 +267,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
     {
       HRESULT res = locator.CreateInstance (__uuidof (ATSCLocator));
       if (FAILED (res)) {
-        GST_ERROR_OBJECT (src, "Unable to create ATSC locator: %s (0x%x)",
+        GST_ERROR_OBJECT (src, "Unable to create ATSC locator: %s (0x%lx)",
             bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
@@ -281,7 +281,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
     {
       HRESULT res = locator.CreateInstance (__uuidof (DVBCLocator));
       if (FAILED (res)) {
-        GST_ERROR_OBJECT (src, "Unable to create DVB-C locator: %s (0x%x)",
+        GST_ERROR_OBJECT (src, "Unable to create DVB-C locator: %s (0x%lx)",
             bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
@@ -298,7 +298,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
     {
       HRESULT res = locator.CreateInstance (__uuidof (DVBTLocator));
       if (FAILED (res)) {
-        GST_ERROR_OBJECT (src, "Unable to create DVB-T locator: %s (0x%x)",
+        GST_ERROR_OBJECT (src, "Unable to create DVB-T locator: %s (0x%lx)",
             bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
@@ -307,7 +307,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
       res = locator->QueryInterface (&dvb_t_locator);
       if (FAILED (res)) {
         GST_ERROR_OBJECT (src, "Unable to get DVB-T locator interface: %s"
-            " (0x%x)", bda_err_to_str (res).c_str (), res);
+            " (0x%lx)", bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
 
@@ -325,7 +325,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
     {
       HRESULT res = locator.CreateInstance (__uuidof (DVBSLocator));
       if (FAILED (res)) {
-        GST_ERROR_OBJECT (src, "Unable to create DVB-S locator: %s (0x%x)",
+        GST_ERROR_OBJECT (src, "Unable to create DVB-S locator: %s (0x%lx)",
             bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
@@ -334,7 +334,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
       res = locator->QueryInterface (&dvb_s_locator);
       if (FAILED (res)) {
         GST_ERROR_OBJECT (src, "Unable to get DVB-S locator interface: %s"
-            " (0x%x)", bda_err_to_str (res).c_str (), res);
+            " (0x%lx)", bda_err_to_str (res).c_str (), res);
         return FALSE;
       }
       dvb_s_locator->put_CarrierFrequency (src->frequency);
@@ -352,7 +352,7 @@ gst_bdasrc_init_tune_request (GstBdaSrc * src,
 
   HRESULT res = tune_request->put_Locator (locator);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (src, "Unable to set locator: %s (0x%x)",
+    GST_ERROR_OBJECT (src, "Unable to set locator: %s (0x%lx)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
@@ -523,7 +523,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
   res = ts_capture->QueryInterface (&sample_grabber);
   if (FAILED (res)) {
     GST_ERROR_OBJECT (bda_src, "Unable to query ISampleGrabber interface: %s"
-        " (0x%x)", bda_err_to_str (res).c_str (), res);
+        " (0x%lx)", bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
@@ -555,7 +555,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
     res = gst_bdasrc_connect_filters (bda_src, bda_src->receiver, ts_capture);
     if (FAILED (res)) {
       GST_ERROR_OBJECT (bda_src, "Unable to connect TS capture: %s"
-          " (0x%x)", bda_err_to_str (res).c_str (), res);
+          " (0x%lx)", bda_err_to_str (res).c_str (), res);
       return FALSE;
     }
   }
@@ -564,7 +564,7 @@ gst_bdasrc_create_ts_capture (GstBdaSrc * bda_src,
       FAILED (res = sample_grabber->SetOneShot (FALSE)) ||
       FAILED (res = sample_grabber->SetCallback (bda_src->ts_grabber, 0))) {
     GST_ERROR_OBJECT (bda_src,
-        "Unable to configure ISampleGrabber interface: %s (0x%x)",
+        "Unable to configure ISampleGrabber interface: %s (0x%lx)",
         bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
