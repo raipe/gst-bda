@@ -385,7 +385,8 @@ gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
     pin_upstream->ConnectedTo (&pin_down);
 
     /* Bail if pins are connected, otherwise check direction and connect. */
-    if ((pin_info_upstream.dir == PINDIR_OUTPUT) && (pin_down == NULL)) {
+    if ((pin_info_upstream.dir == PINDIR_OUTPUT)
+        && (pin_down.GetInterfacePtr () == NULL)) {
       /* Grab downstream filter's enumerator. */
       IEnumPinsPtr enumPinsDownstream;
       res = filter_downstream->EnumPins (&enumPinsDownstream);
@@ -405,7 +406,8 @@ gst_bdasrc_connect_filters (GstBdaSrc * src, IBaseFilter * filter_upstream,
           if (FAILED (res) && res != VFW_E_NOT_CONNECTED)
             continue;
 
-          if ((pin_info_downstream.dir == PINDIR_INPUT) && (pinUp == NULL)) {
+          if ((pin_info_downstream.dir == PINDIR_INPUT)
+              && (pinUp.GetInterfacePtr () == NULL)) {
             res = src->filter_graph->Connect (pin_upstream, pin_downstream);
             if (SUCCEEDED (res)) {
               pin_info_downstream.pFilter->Release ();
