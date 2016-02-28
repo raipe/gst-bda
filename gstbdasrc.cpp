@@ -548,12 +548,12 @@ gst_bdasrc_create_graph (GstBdaSrc * self)
   }
 
   std::string tuner_name = bda_get_tuner_name (tuner_moniker);
-  GST_INFO_OBJECT (self, "Using BDA tuner device '%s'", tuner_name.c_str ());
 
   res = tuner_moniker->BindToObject (NULL, NULL, IID_IBaseFilter,
       (void **) &self->network_tuner);
   if (FAILED (res)) {
-    GST_ERROR_OBJECT (self, "Unable to bind to BDA tuner");
+    GST_ERROR_OBJECT (self, "Unable to bind to BDA tuner '%s'",
+        tuner_name.c_str ());
     return FALSE;
   }
 
@@ -563,6 +563,9 @@ gst_bdasrc_create_graph (GstBdaSrc * self)
         tuner_name.c_str ());
     return FALSE;
   }
+
+  GST_INFO_OBJECT (self, "Using %s tuner device '%s'",
+      gst_bdasrc_get_input_type_name (self->input_type), tuner_name.c_str ());
 
   ITuningSpacePtr tuning_space;
   if (!gst_bdasrc_create_tuning_space (self, tuning_space)) {

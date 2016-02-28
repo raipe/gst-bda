@@ -44,6 +44,8 @@ std::string bda_get_tuner_name (IMoniker * tuner_moniker);
  */
 GstBdaInputType gst_bdasrc_get_input_type (GstBdaSrc * src);
 
+const char *gst_bdasrc_get_input_type_name (GstBdaInputType input_type);
+
 /**
  * Maps our input type to BDA network type.
  */

@@ -138,6 +138,23 @@ gst_bdasrc_get_input_type (GstBdaSrc * self)
   return GST_BDA_UNKNOWN;
 }
 
+const char *
+gst_bdasrc_get_input_type_name (GstBdaInputType input_type)
+{
+  switch (input_type) {
+    case GST_BDA_ATSC:
+      return "ATSC";
+    case GST_BDA_DVB_C:
+      return "DVB-C";
+    case GST_BDA_DVB_S:
+      return "DVB-S";
+    case GST_BDA_DVB_T:
+      return "DVB-T";
+    default:
+      return "unknown";
+  }
+}
+
 BOOL
 gst_bdasrc_get_network_type (GstBdaInputType input_type, CLSID & network_type)
 {
