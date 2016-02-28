@@ -876,6 +876,8 @@ gst_bdasrc_tune (GstBdaSrc * self)
 {
   HRESULT res = self->media_control->Run ();
   if (FAILED (res)) {
+    GST_ERROR_OBJECT (self, "Error starting media control: %s (0x%lx)",
+        bda_err_to_str (res).c_str (), res);
     self->media_control->Stop ();
     return FALSE;
   }
@@ -883,6 +885,8 @@ gst_bdasrc_tune (GstBdaSrc * self)
   IBDA_TopologyPtr bda_topology;
   res = self->network_tuner->QueryInterface (&bda_topology);
   if (FAILED (res)) {
+    GST_ERROR_OBJECT (self, "Error getting BDA topology interface: %s (0x%lx)",
+        bda_err_to_str (res).c_str (), res);
     self->media_control->Stop ();
     return FALSE;
   }
@@ -894,6 +898,9 @@ gst_bdasrc_tune (GstBdaSrc * self)
       node_types);
   if (FAILED (res)) {
     self->media_control->Stop ();
+    GST_WARNING_OBJECT (self,
+        "Error getting BDA topology node types: %s (0x%lx)",
+        bda_err_to_str (res).c_str (), res);
     return FALSE;
   }
 
