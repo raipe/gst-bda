@@ -892,7 +892,7 @@ gst_bdasrc_tune (GstBdaSrc * self)
   }
 
   ULONG node_type_count = 0;
-  ULONG node_types[32];
+  ULONG node_types[32] = { };
   res =
       bda_topology->GetNodeTypes (&node_type_count, _countof (node_types),
       node_types);
