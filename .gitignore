@@ -1,5 +1,6 @@
 Debug
 Release
+build
 x64
 *.opensdf
 *.sdf
