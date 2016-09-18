@@ -32,8 +32,6 @@
 #include "gstbdagrabber.h"
 #include "gstbdatypes.h"
 
-#define GST_CAT_DEFAULT (gstbdasrc_debug)
-
 static const char *
 trim_string (char *str)
 {

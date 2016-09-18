@@ -44,8 +44,6 @@
 #include <qedit.h>
 #include <strmif.h>
 
-GST_DEBUG_CATEGORY_EXTERN (gstbdasrc_debug);
-
 /* Supported BDA input device types. */
 typedef enum
 {

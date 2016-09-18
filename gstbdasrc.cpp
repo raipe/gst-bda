@@ -42,7 +42,6 @@
 #include "gstbdautil.h"
 
 GST_DEBUG_CATEGORY (gstbdasrc_debug);
-#define GST_CAT_DEFAULT (gstbdasrc_debug)
 
 enum
 {

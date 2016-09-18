@@ -28,6 +28,9 @@
 #include <tuner.h>
 #include "gstbdatypes.h"
 
+GST_DEBUG_CATEGORY_EXTERN(gstbdasrc_debug);
+#define GST_CAT_DEFAULT (gstbdasrc_debug)
+
 class GstBdaGrabber;
 
 G_BEGIN_DECLS
