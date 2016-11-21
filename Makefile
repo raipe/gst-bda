@@ -12,9 +12,9 @@ LDFLAGS_64 = $(LDFLAGS) $(shell $(PKG_64) --libs gstreamer-1.0 gstreamer-base-1.
 
 CXXFLAGS = -Wall -Wextra -DMINGW_HAS_SECURE_API=1 \
     -DVERSION="\"0.0.1\"" -DGST_LICENSE="\"LGPL\"" \
-	-DGST_PACKAGE_NAME="\"GStreamer BDA Plugin\"" \
-	-DGST_PACKAGE_ORIGIN="\"https://github.com/raipe/gst-bda\"" \
-	-DPACKAGE="\"gstreamer\""
+    -DGST_PACKAGE_NAME="\"GStreamer BDA Plugin\"" \
+    -DGST_PACKAGE_ORIGIN="\"https://github.com/raipe/gst-bda\"" \
+    -DPACKAGE="\"gstreamer\""
 CXXFLAGS_32 = $(CXXFLAGS) $(shell $(PKG_32) --cflags gstreamer-1.0)
 CXXFLAGS_64 = $(CXXFLAGS) $(shell $(PKG_64) --cflags gstreamer-1.0)
 
