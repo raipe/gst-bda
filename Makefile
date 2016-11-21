@@ -6,6 +6,9 @@ PKG_64 = x86_64-w64-mingw32-pkg-config
 CC_32 = i686-w64-mingw32-g++
 CC_64 = x86_64-w64-mingw32-g++
 
+STRIP_32 = i686-w64-mingw32-strip
+STRIP_64 = x86_64-w64-mingw32-strip
+
 LDFLAGS = -lole32 -lstrmiids -lquartz -loleaut32 -luuid -lksguid
 LDFLAGS_32 = $(LDFLAGS) $(shell $(PKG_32) --libs gstreamer-1.0 gstreamer-base-1.0)
 LDFLAGS_64 = $(LDFLAGS) $(shell $(PKG_64) --libs gstreamer-1.0 gstreamer-base-1.0)
@@ -42,6 +45,8 @@ build/64/%.o: %.cpp
 
 $(BDA_32): $(OBJ_32)
 	$(CC_32) -shared $(CXXFLAGS_32) $(OBJ_32) $(LDFLAGS_32) -o $@
+	$(STRIP_32) $@
 
 $(BDA_64): $(OBJ_64)
 	$(CC_64) -shared $(CXXFLAGS_64) $(OBJ_64) $(LDFLAGS_64) -o $@
+	$(STRIP_64) $@
