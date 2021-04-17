@@ -11,8 +11,9 @@ from BDA devices.
 - ATSC, untested
 
 ## Build requirements
-- [Visual Studio 2013 or later](https://www.visualstudio.com/)
-- [qedit.h](http://blogs.msdn.com/b/karinm/archive/2010/01/15/where-is-qedit-h.aspx)
+- [CMake](https://cmake.org/download/)
+- [Visual Studio](https://www.visualstudio.com/) or [MinGW-w64](http://mingw-w64.org/doku.php)
+- [qedit.h](http://blogs.msdn.com/b/karinm/archive/2010/01/15/where-is-qedit-h.aspx) is required for building with Visual Studio
 - [GStreamer 1.0 SDK](http://gstreamer.freedesktop.org/data/pkg/windows/)
 
 ## Sample pipelines
