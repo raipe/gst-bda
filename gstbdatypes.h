@@ -1,5 +1,5 @@
 /* GStreamer
- * Copyright (C) 2015 Raimo Järvi <raimo.jarvi@gmail.com>
+ * Copyright (C) 2015-2021 Raimo Järvi <raimo.jarvi@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,6 @@
   // MinGW comdef.h requires this for sprintf_s
   #include <stdio.h>
 
-  // This is missing from MinGW qedit.h
-  extern "C" const CLSID CLSID_SampleGrabber;
-
   // These are missing from MinGW bdamedia.h
   const GUID KSCATEGORY_BDA_NETWORK_TUNER = { 0x71985f48, 0x1ca1, 0x11d3, 0x9c, 0xc8, 0x00, 0xc0, 0x4f, 0x79, 0x71, 0xe0 };
   const GUID KSCATEGORY_BDA_TRANSPORT_INFORMATION = { 0xa2e3074f, 0x6c3d, 0x11d3, 0xb6, 0x53, 0x0, 0xc0, 0x4f, 0x79, 0x49, 0x8e };
@@ -37,10 +34,11 @@
   const GUID KSNODE_BDA_8VSB_DEMODULATOR = { 0x71985f4f, 0x1ca1, 0x11d3, 0x9c, 0xc8, 0x0, 0xc0, 0x4f, 0x79, 0x71, 0xe0 };
 #endif
 
+// This is missing from MinGW generated qedit.h
+extern "C" const CLSID CLSID_SampleGrabber;
+
 #include <gst/gst.h>
 #include <comdef.h>
-// To obtain Qedit.h, download the Microsoft Windows SDK Update for Windows Vista and .NET Framework 3.0:
-// http://go.microsoft.com/fwlink/p/?linkid=129787
 #include <qedit.h>
 #include <strmif.h>
 

@@ -25,7 +25,7 @@ if(MSVC)
     strmiids.lib
   )
   set(BDA_INCLUDES
-    .
+    include
     ${GST_ROOT}/include/glib-2.0
     ${GST_ROOT}/include/gstreamer-1.0
     ${GST_ROOT}/lib/gstreamer-1.0/include
